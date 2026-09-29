@@ -29,7 +29,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "brainglobe-data-frontend-connectivity"
-copyright = """2026, Neuroinformatics Unit"""  # noqa: A001
+copyright = "2026, University College London"
 author = "Neuroinformatics Unit"
 
 

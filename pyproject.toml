@@ -3,9 +3,9 @@ name = "brainglobe-data-frontend-connectivity"
 version = "0.1.0"
 description = "A frontend to browse brain connectivity data."
 readme = "README.md"
-license = { text = "BSD" }
+license = "BSD-3-Clause"
 authors = [
-  { name = "Neuroinformatics Unit", email = "code@adamltyson.com" },
+  { name = "Kimberly Meechan, Neuroinformatics Unit", email = "code@adamltyson.com" },
 ]
 requires-python = "==3.14.*"
 classifiers = [

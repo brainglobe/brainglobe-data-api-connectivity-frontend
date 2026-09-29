@@ -1,7 +1,7 @@
 volumes:
   brainglobe_data_frontend_connectivity_local_postgres_data: {}
   brainglobe_data_frontend_connectivity_local_postgres_data_backups: {}
-  
+
 
 services:
   django:

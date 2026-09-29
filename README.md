@@ -1,4 +1,4 @@
-# brainglobe-data-frontend-connectivity
+# brainglobe-data-api-connectivity-frontend
 
 A frontend to browse brain connectivity data.
 
@@ -16,8 +16,8 @@ Make sure [docker compose](https://docs.docker.com/compose/) is available. Depen
 ### Clone the repository
 
 ```bash
-git clone https://github.com/brainglobe/brainglobe-data-frontend-connectivity
-cd brainglobe-data-frontend-connectivity
+git clone https://github.com/brainglobe/brainglobe-data-api-connectivity-frontend
+cd brainglobe-data-api-connectivity-frontend
 ```
 
 ### Run the app with docker

@@ -1,0 +1,18 @@
+services:
+  docs:
+    image: brainglobe_data_frontend_connectivity_local_docs
+    container_name: brainglobe_data_frontend_connectivity_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - path: ./.envs/.local/.django
+        required: false
+    volumes:
+      - /app/.venv
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./brainglobe_data_frontend_connectivity:/app/brainglobe_data_frontend_connectivity:z
+    ports:
+      - '9000:9000'
+    command: /start-docs

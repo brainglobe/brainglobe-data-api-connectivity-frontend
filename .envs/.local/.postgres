@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=brainglobe_data_frontend_connectivity
+POSTGRES_USER=dUSmzwJKMXfelJRndmlrPQETDNnnMDLO
+POSTGRES_PASSWORD=DrCvncL3LIN8K3bdfacUb2yqelmDm3CQDSZTuWDJ4MIUcSWjaBCghoR9BRuPn3PF

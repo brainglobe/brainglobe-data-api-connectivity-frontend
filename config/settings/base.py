@@ -95,7 +95,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "brainglobe_data_api_connectivity_frontend.users",
-    # Your stuff: custom apps go here
+    "brainglobe_data_api_connectivity_frontend.connections",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

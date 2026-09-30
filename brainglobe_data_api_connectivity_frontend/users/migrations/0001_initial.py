@@ -4,7 +4,7 @@ import django.utils.timezone
 from django.db import migrations
 from django.db import models
 
-import brainglobe_data_frontend_connectivity.users.models
+import brainglobe_data_api_connectivity_frontend.users.models
 
 
 class Migration(migrations.Migration):
@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
                 "abstract": False,
             },
             managers=[
-                ("objects", brainglobe_data_frontend_connectivity.users.models.UserManager()),
+                ("objects", brainglobe_data_api_connectivity_frontend.users.models.UserManager()),
             ],
         ),
     ]

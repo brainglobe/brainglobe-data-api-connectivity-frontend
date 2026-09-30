@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from brainglobe_data_frontend_connectivity.users.models import User
+    from brainglobe_data_api_connectivity_frontend.users.models import User
 
 
 def test_user_get_absolute_url(user: User):

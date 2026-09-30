@@ -20,9 +20,9 @@ def main():
         ) from exc
 
     # This allows easy placement of apps within the interior
-    # brainglobe_data_frontend_connectivity directory.
+    # brainglobe_data_api_connectivity_frontend directory.
     current_path = Path(__file__).parent.resolve()
-    sys.path.append(str(current_path / "brainglobe_data_frontend_connectivity"))
+    sys.path.append(str(current_path / "brainglobe_data_api_connectivity_frontend"))
 
     execute_from_command_line(sys.argv)
 

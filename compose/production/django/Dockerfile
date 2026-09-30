@@ -64,7 +64,7 @@ RUN chmod +x /start
 # Copy the application from the builder
 COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}
 # explicitly create the media folder before changing ownership below
-RUN mkdir -p ${APP_HOME}/brainglobe_data_frontend_connectivity/media
+RUN mkdir -p ${APP_HOME}/brainglobe_data_api_connectivity_frontend/media
 
 # make django owner of the WORKDIR directory as well.
 RUN chown django:django ${APP_HOME}

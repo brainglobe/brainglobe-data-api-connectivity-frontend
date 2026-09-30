@@ -6,7 +6,7 @@ from django.urls import resolve
 from django.urls import reverse
 
 if TYPE_CHECKING:
-    from brainglobe_data_frontend_connectivity.users.models import User
+    from brainglobe_data_api_connectivity_frontend.users.models import User
 
 
 def test_detail(user: User):

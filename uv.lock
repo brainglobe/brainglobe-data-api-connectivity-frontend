@@ -159,7 +159,7 @@ wheels = [
 ]
 
 [[package]]
-name = "brainglobe-data-frontend-connectivity"
+name = "brainglobe-data-api-connectivity-frontend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

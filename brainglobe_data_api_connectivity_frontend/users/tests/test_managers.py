@@ -3,7 +3,7 @@ from io import StringIO
 import pytest
 from django.core.management import call_command
 
-from brainglobe_data_frontend_connectivity.users.models import User
+from brainglobe_data_api_connectivity_frontend.users.models import User
 
 
 @pytest.mark.django_db

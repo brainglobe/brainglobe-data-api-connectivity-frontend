@@ -41,7 +41,7 @@ def update_site_forward(apps, schema_editor):
         Site,
         schema_editor.connection,
         "neurome.neuroinformatics.dev",
-        "brainglobe-data-frontend-connectivity",
+        "brainglobe-data-api-connectivity-frontend",
     )
 
 

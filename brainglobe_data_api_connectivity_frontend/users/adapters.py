@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     from allauth.socialaccount.models import SocialLogin
     from django.http import HttpRequest
 
-    from brainglobe_data_frontend_connectivity.users.models import User
+    from brainglobe_data_api_connectivity_frontend.users.models import User
 
 
 class AccountAdapter(DefaultAccountAdapter):

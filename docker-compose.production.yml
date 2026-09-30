@@ -12,9 +12,9 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
 
-    image: brainglobe_data_frontend_connectivity_production_django
+    image: brainglobe_data_api_connectivity_frontend_production_django
     volumes:
-      - production_django_media:/app/brainglobe_data_frontend_connectivity/media
+      - production_django_media:/app/brainglobe_data_api_connectivity_frontend/media
     depends_on:
       - postgres
       - redis
@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: brainglobe_data_frontend_connectivity_production_postgres
+    image: brainglobe_data_api_connectivity_frontend_production_postgres
     volumes:
       - production_postgres_data:/var/lib/postgresql/18/docker
       - production_postgres_data_backups:/backups
@@ -38,7 +38,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/traefik/Dockerfile
-    image: brainglobe_data_frontend_connectivity_production_traefik
+    image: brainglobe_data_api_connectivity_frontend_production_traefik
     depends_on:
       - django
     volumes:
@@ -55,7 +55,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/nginx/Dockerfile
-    image: brainglobe_data_frontend_connectivity_production_nginx
+    image: brainglobe_data_api_connectivity_frontend_production_nginx
     depends_on:
       - django
     volumes:

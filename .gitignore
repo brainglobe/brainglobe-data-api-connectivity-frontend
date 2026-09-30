@@ -268,7 +268,7 @@ tags
 dump.rdb
 
 ### Project template
-brainglobe_data_frontend_connectivity/media/
+brainglobe_data_api_connectivity_frontend/media/
 
 .pytest_cache/
 .ipython/

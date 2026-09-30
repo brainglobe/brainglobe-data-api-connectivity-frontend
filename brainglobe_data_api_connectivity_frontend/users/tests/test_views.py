@@ -14,16 +14,16 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from brainglobe_data_frontend_connectivity.users.forms import UserAdminChangeForm
-from brainglobe_data_frontend_connectivity.users.tests.factories import UserFactory
-from brainglobe_data_frontend_connectivity.users.views import UserRedirectView
-from brainglobe_data_frontend_connectivity.users.views import UserUpdateView
-from brainglobe_data_frontend_connectivity.users.views import user_detail_view
+from brainglobe_data_api_connectivity_frontend.users.forms import UserAdminChangeForm
+from brainglobe_data_api_connectivity_frontend.users.tests.factories import UserFactory
+from brainglobe_data_api_connectivity_frontend.users.views import UserRedirectView
+from brainglobe_data_api_connectivity_frontend.users.views import UserUpdateView
+from brainglobe_data_api_connectivity_frontend.users.views import user_detail_view
 
 if TYPE_CHECKING:
     from django.test import RequestFactory
 
-    from brainglobe_data_frontend_connectivity.users.models import User
+    from brainglobe_data_api_connectivity_frontend.users.models import User
 
 pytestmark = pytest.mark.django_db
 

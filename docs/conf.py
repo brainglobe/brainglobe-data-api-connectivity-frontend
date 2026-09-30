@@ -28,7 +28,7 @@ django.setup()
 
 # -- Project information -----------------------------------------------------
 
-project = "brainglobe-data-frontend-connectivity"
+project = "brainglobe-data-api-connectivity-frontend"
 copyright = "2026, University College London"
 author = "Neuroinformatics Unit"
 

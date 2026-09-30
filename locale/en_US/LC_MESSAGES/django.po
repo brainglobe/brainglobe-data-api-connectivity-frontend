@@ -1,4 +1,4 @@
-# Translations for the brainglobe-data-frontend-connectivity project
+# Translations for the brainglobe-data-api-connectivity-frontend project
 # Copyright (C) 2026 Neuroinformatics Unit
 # Neuroinformatics Unit <code@adamltyson.com>, 2026.
 #

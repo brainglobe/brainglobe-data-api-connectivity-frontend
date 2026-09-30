@@ -1,5 +1,5 @@
 [project]
-name = "brainglobe-data-frontend-connectivity"
+name = "brainglobe-data-api-connectivity-frontend"
 version = "0.1.0"
 description = "A frontend to browse brain connectivity data."
 readme = "README.md"
@@ -176,6 +176,6 @@ python_files = [
 
 [tool.coverage]
 # ==== Coverage ====
-run.include = [ "brainglobe_data_frontend_connectivity/**" ]
+run.include = [ "brainglobe_data_api_connectivity_frontend/**" ]
 run.omit = [ "*/migrations/*", "*/tests/*" ]
 run.plugins = [ "django_coverage_plugin" ]

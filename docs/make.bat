@@ -10,7 +10,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=_source
 set BUILDDIR=_build
-set APP=..\brainglobe_data_frontend_connectivity
+set APP=..\brainglobe_data_api_connectivity_frontend
 
 if "%1" == "" goto help
 

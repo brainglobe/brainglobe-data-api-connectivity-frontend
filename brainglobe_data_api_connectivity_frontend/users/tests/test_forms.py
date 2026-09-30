@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 
 from django.utils.translation import gettext_lazy as _
 
-from brainglobe_data_frontend_connectivity.users.forms import UserAdminCreationForm
+from brainglobe_data_api_connectivity_frontend.users.forms import UserAdminCreationForm
 
 if TYPE_CHECKING:
-    from brainglobe_data_frontend_connectivity.users.models import User
+    from brainglobe_data_api_connectivity_frontend.users.models import User
 
 
 class TestUserAdminCreationForm:

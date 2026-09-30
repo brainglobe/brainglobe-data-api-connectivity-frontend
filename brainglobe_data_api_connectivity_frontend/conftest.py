@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from brainglobe_data_frontend_connectivity.users.tests.factories import UserFactory
+from brainglobe_data_api_connectivity_frontend.users.tests.factories import UserFactory
 
 if TYPE_CHECKING:
-    from brainglobe_data_frontend_connectivity.users.models import User
+    from brainglobe_data_api_connectivity_frontend.users.models import User
 
 
 @pytest.fixture(autouse=True)

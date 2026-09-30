@@ -7,8 +7,8 @@ from pathlib import Path
 import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-# brainglobe_data_frontend_connectivity/
-APPS_DIR = BASE_DIR / "brainglobe_data_frontend_connectivity"
+# brainglobe_data_api_connectivity_frontend/
+APPS_DIR = BASE_DIR / "brainglobe_data_api_connectivity_frontend"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
@@ -94,7 +94,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "brainglobe_data_frontend_connectivity.users",
+    "brainglobe_data_api_connectivity_frontend.users",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -104,7 +104,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
 MIGRATION_MODULES = {
-    "sites": "brainglobe_data_frontend_connectivity.contrib.sites.migrations",
+    "sites": "brainglobe_data_api_connectivity_frontend.contrib.sites.migrations",
 }
 
 # AUTHENTICATION
@@ -200,7 +200,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "brainglobe_data_frontend_connectivity.users.context_processors.allauth_settings",
+                "brainglobe_data_api_connectivity_frontend.users.context_processors.allauth_settings",
             ],
         },
     },
@@ -288,18 +288,20 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "brainglobe_data_frontend_connectivity.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = (
+    "brainglobe_data_api_connectivity_frontend.users.adapters.AccountAdapter"
+)
 # https://docs.allauth.org/en/latest/account/forms.html
 ACCOUNT_FORMS = {
-    "signup": "brainglobe_data_frontend_connectivity.users.forms.UserSignupForm",
+    "signup": "brainglobe_data_api_connectivity_frontend.users.forms.UserSignupForm",
 }
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_ADAPTER = (
-    "brainglobe_data_frontend_connectivity.users.adapters.SocialAccountAdapter"
+    "brainglobe_data_api_connectivity_frontend.users.adapters.SocialAccountAdapter"
 )
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_FORMS = {
-    "signup": "brainglobe_data_frontend_connectivity.users.forms.UserSocialSignupForm",
+    "signup": "brainglobe_data_api_connectivity_frontend.users.forms.UserSocialSignupForm",
 }
 # django-compressor
 # ------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 volumes:
-  brainglobe_data_frontend_connectivity_local_postgres_data: {}
-  brainglobe_data_frontend_connectivity_local_postgres_data_backups: {}
+  brainglobe_data_api_connectivity_frontend_local_postgres_data: {}
+  brainglobe_data_api_connectivity_frontend_local_postgres_data_backups: {}
 
 
 services:
@@ -8,8 +8,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
-    image: brainglobe_data_frontend_connectivity_local_django
-    container_name: brainglobe_data_frontend_connectivity_local_django
+    image: brainglobe_data_api_connectivity_frontend_local_django
+    container_name: brainglobe_data_api_connectivity_frontend_local_django
     depends_on:
       - postgres
     volumes:
@@ -28,11 +28,11 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: brainglobe_data_frontend_connectivity_production_postgres
-    container_name: brainglobe_data_frontend_connectivity_local_postgres
+    image: brainglobe_data_api_connectivity_frontend_production_postgres
+    container_name: brainglobe_data_api_connectivity_frontend_local_postgres
     volumes:
-      - brainglobe_data_frontend_connectivity_local_postgres_data:/var/lib/postgresql/18/docker
-      - brainglobe_data_frontend_connectivity_local_postgres_data_backups:/backups
+      - brainglobe_data_api_connectivity_frontend_local_postgres_data:/var/lib/postgresql/18/docker
+      - brainglobe_data_api_connectivity_frontend_local_postgres_data_backups:/backups
     env_file:
       - path: ./.envs/.local/.postgres
         required: false

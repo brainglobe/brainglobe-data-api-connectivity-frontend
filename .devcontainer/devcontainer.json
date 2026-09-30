@@ -1,6 +1,6 @@
 // For format details, see https://containers.dev/implementors/json_reference/
 {
-    "name": "brainglobe_data_frontend_connectivity_dev",
+    "name": "brainglobe_data_api_connectivity_frontend_dev",
     "dockerComposeFile": [
         "../docker-compose.local.yml"
     ],

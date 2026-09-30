@@ -4,7 +4,7 @@ from factory import Faker
 from factory import post_generation
 from factory.django import DjangoModelFactory
 
-from brainglobe_data_frontend_connectivity.users.models import User
+from brainglobe_data_api_connectivity_frontend.users.models import User
 
 
 class UserFactory(DjangoModelFactory[User]):

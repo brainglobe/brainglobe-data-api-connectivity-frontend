@@ -9,7 +9,7 @@ even if the default User model is sufficient for you.
 This model behaves identically to the default user model, 
 but you’ll be able to customize it in the future if the need arises.
 
-.. automodule:: brainglobe_data_frontend_connectivity.users.models
+.. automodule:: brainglobe_data_api_connectivity_frontend.users.models
    :members:
    :noindex:
 

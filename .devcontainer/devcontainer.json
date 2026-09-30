@@ -26,6 +26,36 @@
     "workspaceFolder": "/app",
     // Set *default* container specific settings.json values on container create.
     "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.formatOnSave": true,
+                "[python]": {
+                    "analysis.autoImportCompletions": true,
+                    "analysis.typeCheckingMode": "basic",
+                    "defaultInterpreterPath": "/usr/local/bin/python",
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": "always"
+                    },
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "languageServer": "Pylance",
+                    "linting.enabled": true,
+                    "linting.mypyEnabled": true,
+                    "linting.mypyPath": "/usr/local/bin/mypy",
+                }
+            },
+            // https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_vs-code-specific-properties
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "davidanson.vscode-markdownlint",
+                "mrmlnc.vscode-duplicate",
+                // python
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "charliermarsh.ruff",
+                // django
+                "batisteo.vscode-django"
+            ]
+        }
     },
     // Uncomment the next line if you want start specific services in your Docker Compose config.
     // "runServices": [],

@@ -271,3 +271,6 @@ brainglobe_data_api_connectivity_frontend/media/
 .env
 .envs/*
 !.envs/.local/
+
+# temporary data directory
+data/

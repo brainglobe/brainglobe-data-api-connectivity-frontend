@@ -1,3 +1,5 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django import forms
 
 from . import graph_data
@@ -15,8 +17,13 @@ def _fetch_regions():
 class DirectConnectionsForm(forms.Form):
     """Form to query direct connections of a node"""
 
-    regions = forms.ChoiceField(
+    region = forms.ChoiceField(
         label="Region name",
         choices=_fetch_regions,
         required=True,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit("submit", "Submit"))

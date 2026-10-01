@@ -36,3 +36,5 @@ services:
     env_file:
       - path: ./.envs/.local/.postgres
         required: false
+    ports:
+      - '5433:5432'

@@ -1,8 +1,10 @@
-import csv
 from typing import TYPE_CHECKING
 
 from django.core.files.base import ContentFile
+from django.http import FileResponse
+from django.http import Http404
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 
@@ -23,7 +25,7 @@ def browse_connections(request: HttpRequest) -> HttpResponse:
         form = DirectConnectionsForm(request.POST)
         if form.is_valid():
             result_df = direct_connections(form.cleaned_data["region"])
-            query_result = QueryResult()
+            query_result = QueryResult(success=True, n_rows=len(result_df))
             query_result.result_file.save(
                 name="results.csv", content=ContentFile(result_df.write_csv())
             )
@@ -36,19 +38,19 @@ def browse_connections(request: HttpRequest) -> HttpResponse:
 
 
 def results(request: HttpRequest, result_id: int) -> HttpResponse:
-    return render(request, "connections/results.html")
+
+    result = get_object_or_404(QueryResult, id=result_id)
+    return render(request, "connections/results.html", {"result": result})
 
 
-def download_results(request: HttpRequest) -> HttpResponse:
+def download_results(request: HttpRequest, result_id: int) -> HttpResponse:
 
-    # Create the HttpResponse object with the appropriate CSV header.
-    response = HttpResponse(
-        content_type="text/csv",
-        headers={"Content-Disposition": 'attachment; filename="result.csv"'},
+    result = get_object_or_404(QueryResult, id=result_id)
+    if not result.result_file:
+        msg = "File no longer available"
+        raise Http404(msg)
+
+    return FileResponse(
+        result.result_file.open("rb"),
+        as_attachment=True,
     )
-
-    writer = csv.writer(response)
-    writer.writerow(["First row", "Foo", "Bar", "Baz"])
-    writer.writerow(["Second row", "A", "B", "C", '"Testing"', "Here's a quote"])
-
-    return response

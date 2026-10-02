@@ -1,1 +1,9 @@
 {% extends "base.html" %}
+
+{% block title %}Home{% endblock title %}
+{% block content %}
+  <h1>Welcome to Neurome Browser</h1>
+  <p>Info about the site...</p>
+  <a class="btn btn-primary"
+     href="{% url 'connections:browse_connections' %}">Query connections</a>
+{% endblock content %}

@@ -5,13 +5,9 @@
 {% block title %}Results{% endblock title %}
 {% block content %}
   <h1>Results</h1>
-  {% if result.success %}
-    <h2>Query completed successfully</h2>
-    <p>{{ result.n_rows }} rows returned.</p>
-    <a href="{% url 'connections:download_results' result.id %}"
-       class="btn">Download CSV ({{ result.result_file.size|filesizeformat }})</a>
-  {% else %}
-    <h2>Query failed</h2>
-  {% endif %}
+  <h2>Query completed successfully</h2>
+  <p>{{ result.n_rows }} rows returned.</p>
+  <a href="{% url 'connections:download_results' result.id %}"
+     class="btn">Download CSV ({{ result.result_file.size|filesizeformat }})</a>
   <a href="{% url 'connections:browse_connections' %}">Run another query</a>
 {% endblock content %}

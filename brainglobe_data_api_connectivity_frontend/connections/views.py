@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from django.core.files.base import ContentFile
 from django.http import FileResponse
 from django.http import Http404
@@ -22,13 +23,19 @@ if TYPE_CHECKING:
 def browse_connections(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = DirectConnectionsForm(request.POST)
+
         if form.is_valid():
-            result_df = direct_connections(form.cleaned_data["region"])
+            node_as = NodeIs[form.cleaned_data["node_as"]]
+            result_df = direct_connections(
+                region_name=form.cleaned_data["region"], node_as=node_as
+            )
+
             query_result = QueryResult(n_rows=len(result_df))
             query_result.result_file.save(
                 name="results.csv", content=ContentFile(result_df.write_csv())
             )
             query_result.save()
+
             return redirect("connections:results", result_id=query_result.id)
     else:
         form = DirectConnectionsForm()

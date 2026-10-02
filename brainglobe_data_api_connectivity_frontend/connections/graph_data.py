@@ -1,7 +1,11 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import polars as pl
 from brainglobe_data_api_connectivity.connections import Connections
+
+if TYPE_CHECKING:
+    from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 
 
 def get_connections() -> Connections:
@@ -14,7 +18,7 @@ def get_connections() -> Connections:
     )
 
 
-def direct_connections(region_name: str) -> pl.DataFrame:
+def direct_connections(region_name: str, node_as: NodeIs) -> pl.DataFrame:
 
     # Get index of node with 'name=region_name'
     connections = get_connections()
@@ -26,12 +30,14 @@ def direct_connections(region_name: str) -> pl.DataFrame:
         raise ValueError(msg)
 
     # Get names of nodes with direct connection
-    directs = connections.direct_connections(node_internal_index=node_index[0])
+    directs = connections.direct_connections(
+        node_internal_index=node_index[0], node_as=node_as
+    )
 
     result_dfs = []
-    for node_list, node_as in zip(directs, ["input", "output"], strict=True):
+    for node_list, source in zip(directs, ["input", "output"], strict=True):
         node_df = connections.node_information_from_index(node_list).select("name")
-        node_df = node_df.with_columns(pl.lit(node_as).alias("node_as"))
+        node_df = node_df.with_columns(pl.lit(source).alias("node_as"))
         result_dfs.append(node_df)
 
     return pl.concat(result_dfs)

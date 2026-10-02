@@ -1,3 +1,4 @@
+from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
@@ -20,6 +21,12 @@ class DirectConnectionsForm(forms.Form):
     region = forms.ChoiceField(
         label="Region name",
         choices=_fetch_regions,
+        required=True,
+    )
+
+    node_as = forms.ChoiceField(
+        label="Node as",
+        choices=[(option.name, option.name) for option in NodeIs],
         required=True,
     )
 

@@ -20,12 +20,11 @@ if TYPE_CHECKING:
 
 
 def browse_connections(request: HttpRequest) -> HttpResponse:
-
     if request.method == "POST":
         form = DirectConnectionsForm(request.POST)
         if form.is_valid():
             result_df = direct_connections(form.cleaned_data["region"])
-            query_result = QueryResult(success=True, n_rows=len(result_df))
+            query_result = QueryResult(n_rows=len(result_df))
             query_result.result_file.save(
                 name="results.csv", content=ContentFile(result_df.write_csv())
             )

@@ -38,3 +38,26 @@ To stop the app:
 ```bash
 docker compose -f docker-compose.local.yml down
 ```
+
+## Run the tests
+
+We use [`pytest`](https://docs.pytest.org/en/stable/) with [`pytest-django`](https://pytest-django.readthedocs.io/en/stable/) for tests.
+
+Tests that are specific to a particular app, go inside that directory e.g. `brainglobe_data_api_connectivity_frontend/connections/tests`. Tests that aren't for a particular app, go in the top-level `tests/` directory.
+
+Run the tests locally with:
+```bash
+# Creates a temporary container to run the tests, then removes it when complete
+docker compose -f docker-compose.local.yml run --rm django pytest
+```
+
+If you'd prefer to run the tests inside an already running container, you can do:
+```bash
+# Enter a bash terminal inside the running django container
+docker exec -it brainglobe_data_api_connectivity_frontend_local_django bash
+
+# Source some required env variables like DATABASE_URL, and make sure failures won't exit the bash terminal
+source /entrypoint && set +euo pipefail
+
+pytest
+```

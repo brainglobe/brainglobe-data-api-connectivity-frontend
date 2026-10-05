@@ -3,6 +3,7 @@ With these settings, tests run faster.
 """
 
 from .base import *  # noqa: F403
+from .base import APPS_DIR
 from .base import TEMPLATES
 from .base import env
 
@@ -34,5 +35,7 @@ TEMPLATES[0]["OPTIONS"]["debug"] = True  # type: ignore[index]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "http://media.testserver/"
+
 # Your stuff...
 # ------------------------------------------------------------------------------
+CONNECTIONS_DATA_DIR = APPS_DIR / "connections" / "tests" / "data"

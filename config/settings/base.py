@@ -311,3 +311,4 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+CONNECTIONS_DATA_DIR = APPS_DIR / "connections" / "data"

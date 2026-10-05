@@ -273,5 +273,5 @@ brainglobe_data_api_connectivity_frontend/media/
 !.envs/.local/
 
 # temporary files
-data/
+brainglobe_data_api_connectivity_frontend/connections/data/
 tmp/

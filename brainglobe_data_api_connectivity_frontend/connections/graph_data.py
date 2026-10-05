@@ -1,9 +1,9 @@
 from enum import StrEnum
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import polars as pl
 from brainglobe_data_api_connectivity.connections import Connections
+from django.conf import settings
 
 if TYPE_CHECKING:
     from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
@@ -16,10 +16,9 @@ class Sex(StrEnum):
 
 def get_connections(sex: Sex) -> Connections:
 
-    data_dir = Path(__file__).parent / "data"
     identifier = "CNS2m" if sex == Sex.MALE else "CNS2f"
 
-    sex_dir = data_dir / identifier
+    sex_dir = settings.CONNECTIONS_DATA_DIR / identifier
     return Connections.from_files(
         node_info=sex_dir / f"{identifier}_node_info.csv",
         edge_table=sex_dir / f"{identifier}_edge_table.csv",

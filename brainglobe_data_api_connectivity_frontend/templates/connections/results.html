@@ -9,7 +9,7 @@
   <div class="d-flex justify-content-center gap-2">
     <a href="{% url 'connections:download_results' result.id %}"
        class="btn btn-primary">Download CSV ({{ result.result_file.size|filesizeformat }})</a>
-    <a href="{% url 'connections:browse_connections' %}"
+    <a href="{% url 'connections:browse_connections' result.sex %}"
        class="btn btn-secondary">Run another query</a>
   </div>
 {% endblock content %}

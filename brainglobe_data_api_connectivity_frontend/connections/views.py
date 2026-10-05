@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
     direct_connections,
 )
@@ -20,17 +21,22 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
-def browse_connections(request: HttpRequest) -> HttpResponse:
+def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
+
+    if sex not in Sex:
+        msg = f"Provided sex must be one of {list(Sex)}"
+        raise Http404(msg)
+
     if request.method == "POST":
-        form = DirectConnectionsForm(request.POST)
+        form = DirectConnectionsForm(request.POST, sex=sex)
 
         if form.is_valid():
             node_as = NodeIs[form.cleaned_data["node_as"]]
             result_df = direct_connections(
-                region_name=form.cleaned_data["region"], node_as=node_as
+                sex=sex, region_id=form.cleaned_data["region"], node_as=node_as
             )
 
-            query_result = QueryResult(n_rows=len(result_df))
+            query_result = QueryResult(sex=sex, n_rows=len(result_df))
             query_result.result_file.save(
                 name="results.csv", content=ContentFile(result_df.write_csv())
             )
@@ -38,9 +44,11 @@ def browse_connections(request: HttpRequest) -> HttpResponse:
 
             return redirect("connections:results", result_id=query_result.id)
     else:
-        form = DirectConnectionsForm()
+        form = DirectConnectionsForm(sex=sex)
 
-    return render(request, "connections/browse_connections.html", {"form": form})
+    return render(
+        request, "connections/browse_connections.html", {"form": form, "sex": sex}
+    )
 
 
 def results(request: HttpRequest, result_id: int) -> HttpResponse:

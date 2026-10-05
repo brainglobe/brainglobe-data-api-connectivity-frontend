@@ -4,7 +4,7 @@ from . import views
 
 app_name = "connections"
 urlpatterns = [
-    path("", views.browse_connections, name="browse_connections"),
+    path("<str:sex>", views.browse_connections, name="browse_connections"),
     path("results/<int:result_id>/", views.results, name="results"),
     path(
         "results/<int:result_id>/download/",

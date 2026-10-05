@@ -6,12 +6,12 @@ from django import forms
 from . import graph_data
 
 
-def _fetch_regions():
+def _fetch_regions(sex: str):
     """Fetch available region names / indexes to populate dropdown menu"""
 
-    connections = graph_data.get_connections()
+    connections = graph_data.get_connections(sex)
 
-    names = connections.nodes["name"]
+    names = sorted(connections.nodes["region_id"])
     return [(name, name) for name in names]
 
 
@@ -20,7 +20,6 @@ class DirectConnectionsForm(forms.Form):
 
     region = forms.ChoiceField(
         label="Region name",
-        choices=_fetch_regions,
         required=True,
     )
 
@@ -30,7 +29,9 @@ class DirectConnectionsForm(forms.Form):
         required=True,
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, sex: str, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.fields["region"].choices = _fetch_regions(sex)
         self.helper = FormHelper()
         self.helper.add_input(Submit("submit", "Submit"))

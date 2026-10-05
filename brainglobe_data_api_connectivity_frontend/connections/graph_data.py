@@ -26,7 +26,7 @@ def get_connections(sex: Sex) -> Connections:
         edge_info=sex_dir / f"{identifier}_edge_info.csv",
         edge_info_from_col="origin_region_idx",
         edge_info_to_col="termination_region_idx",
-        node_index_column="node_idx",
+        node_index_column="region_idx",
     )
 
 

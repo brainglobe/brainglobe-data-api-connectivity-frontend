@@ -56,7 +56,7 @@ def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFram
         A polars dataframe with two columns: region_id and node_as
     """
 
-    # Get index of node with 'name=region_name'
+    # Get index of node with specified region_id
     connections = get_connections(sex)
     node_index = connections.node_indexes_from_information(
         pl.col("region_id") == region_id
@@ -65,7 +65,7 @@ def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFram
         msg = f"Found {len(node_index)} nodes with name {region_id}"
         raise ValueError(msg)
 
-    # Get names of nodes with direct connection
+    # Get ids of nodes with direct connection
     directs = connections.direct_connections(
         node_internal_index=node_index[0], node_as=node_as
     )

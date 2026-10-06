@@ -3,6 +3,7 @@ from pathlib import Path
 
 import polars as pl
 import pytest
+from django.core.files.base import ContentFile
 from django.urls import reverse
 from polars.testing import assert_frame_equal
 from pytest_django.asserts import assertRedirects
@@ -13,8 +14,9 @@ from brainglobe_data_api_connectivity_frontend.connections.forms import (
 )
 from brainglobe_data_api_connectivity_frontend.connections.models import QueryResult
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 def test_browse_connections_invalid_sex(client):
     """Test that an invalid sex routes to a 404 page."""
 
@@ -23,7 +25,6 @@ def test_browse_connections_invalid_sex(client):
 
 
 @pytest.mark.parametrize("sex", ["male", "female"])
-@pytest.mark.django_db
 def test_browse_connections_get(client, sex):
     response = client.get(reverse("connections:browse_connections", args=[sex]))
 
@@ -60,7 +61,6 @@ def test_browse_connections_get(client, sex):
         ),
     ],
 )
-@pytest.mark.django_db
 def test_browse_connections_post(client, sex, region_id, expected_result):
 
     n_results_before = QueryResult.objects.count()
@@ -86,3 +86,29 @@ def test_browse_connections_post(client, sex, region_id, expected_result):
 
     # The view should redirect to the results page on successful query
     assertRedirects(response, reverse("connections:results", args=[latest_result.id]))
+
+
+def test_invalid_result_view(client):
+    """Test that trying to view an invalid result id throws 404"""
+
+    if QueryResult.objects.count() == 0:
+        missing_id = 1
+    else:
+        latest_result = QueryResult.objects.latest("id")
+        missing_id = latest_result.id + 1
+
+    response = client.get(reverse("connections:results", args=[missing_id]))
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_valid_result_view(client):
+    """Test a valid result id is fetched and rendered on page."""
+
+    new_result = QueryResult(sex="female", n_rows=876)
+    new_result.result_file.save(name="test", content=ContentFile("hello world"))
+    new_result.save()
+
+    response = client.get(reverse("connections:results", args=[new_result.id]))
+
+    assert response.context["result"] == new_result
+    assertTemplateUsed(response=response, template_name="connections/results.html")

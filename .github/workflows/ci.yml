@@ -19,22 +19,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  linter:
+  linting:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code Repository
-        uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version-file: '.python-version'
-      # Consider using pre-commit.ci for open source project
-      - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
+      - uses: neuroinformatics-unit/actions/lint@v3
 
   # With no caching at all the entire ci process takes 3m to complete!
   pytest:
+    needs: [linting]
     runs-on: ubuntu-latest
 
     steps:
@@ -95,7 +87,12 @@ jobs:
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
 
       - name: Run Django Tests
-        run: docker compose -f docker-compose.local.yml run django pytest
+        run: docker compose -f docker-compose.local.yml run django pytest --cov --cov-report=xml
 
       - name: Tear down the Stack
         run: docker compose -f docker-compose.local.yml down
+
+      - name: Report coverage to codecov
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

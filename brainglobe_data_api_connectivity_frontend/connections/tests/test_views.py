@@ -80,7 +80,7 @@ def test_browse_connections_get(client, sex):
 @pytest.mark.parametrize(
     ("sex", "region_id", "expected_result"),
     [
-        (
+        pytest.param(
             "female",
             "delta",
             pl.DataFrame(
@@ -89,8 +89,9 @@ def test_browse_connections_get(client, sex):
                     "node_as": ["input", "input", "input", "output", "output"],
                 }
             ),
+            id="female",
         ),
-        (
+        pytest.param(
             "male",
             "juliett",
             pl.DataFrame(
@@ -99,6 +100,7 @@ def test_browse_connections_get(client, sex):
                     "node_as": ["input", "input", "input", "output"],
                 }
             ),
+            id="male",
         ),
     ],
 )
@@ -129,8 +131,8 @@ def test_browse_connections_post(client, sex, region_id, expected_result):
     assertRedirects(response, reverse("connections:results", args=[latest_result.id]))
 
 
-def test_invalid_result_view(rf, next_result_id):
-    """Test that trying to view an invalid result id throws 404"""
+def test_view_missing_result(rf, next_result_id):
+    """Test that trying to view a non-existent result id throws 404"""
 
     request = rf.get(reverse("connections:results", args=[next_result_id]))
     with assertRaisesMessage(Http404, "No QueryResult matches the given query."):

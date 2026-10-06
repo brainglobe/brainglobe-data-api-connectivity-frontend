@@ -25,7 +25,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
     """Main page for browsing connections of a specific sex."""
 
     if sex not in Sex:
-        msg = f"Provided sex must be one of {list(Sex)}"
+        msg = f"Provided sex must be one of {[sex.value for sex in Sex]}"
         raise Http404(msg)
 
     if request.method == "POST":

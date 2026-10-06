@@ -15,6 +15,15 @@ class Sex(StrEnum):
 
 
 def get_connections(sex: Sex) -> Connections:
+    """
+    Create a connections object for the specified sex.
+
+    This function uses csv files stored inside settings.CONNECTIONS_DATA_DIR.
+    This directory should contain one folder for each sex
+    (identifiers: "CNS2m" / "CNS2f"), each containing:
+    IDENTIFIER_node_info.csv, IDENTIFIER_edge_table.csv, and
+    IDENTIFIER_edge_info.csv,
+    """
 
     identifier = "CNS2m" if sex == Sex.MALE else "CNS2f"
 
@@ -30,6 +39,22 @@ def get_connections(sex: Sex) -> Connections:
 
 
 def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFrame:
+    """Retrieve the direct connections of a region.
+
+    Parameters
+    ----------
+    sex : Sex
+        The sex to query (male / female)
+    region_id : str
+        The region id e.g. GPl_1
+    node_as : NodeIs
+        The role of the region node - INPUT, OUTPUT or ANY.
+
+    Returns
+    -------
+    pl.DataFrame
+        A polars dataframe with two columns: region_id and node_as
+    """
 
     # Get index of node with 'name=region_name'
     connections = get_connections(sex)

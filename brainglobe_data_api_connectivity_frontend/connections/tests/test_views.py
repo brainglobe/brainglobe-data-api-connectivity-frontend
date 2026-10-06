@@ -17,6 +17,17 @@ from brainglobe_data_api_connectivity_frontend.connections.models import QueryRe
 pytestmark = pytest.mark.django_db
 
 
+@pytest.fixture
+def new_query_result():
+    """Add a new QueryResult to the database"""
+
+    new_result = QueryResult(sex="female", n_rows=876)
+    new_result.result_file.save(name="test", content=ContentFile("hello world"))
+    new_result.save()
+
+    return new_result
+
+
 def test_browse_connections_invalid_sex(client):
     """Test that an invalid sex routes to a 404 page."""
 
@@ -101,14 +112,21 @@ def test_invalid_result_view(client):
     assert response.status_code == HTTPStatus.NOT_FOUND
 
 
-def test_valid_result_view(client):
+def test_view_valid_result(client, new_query_result):
     """Test a valid result id is fetched and rendered on page."""
 
-    new_result = QueryResult(sex="female", n_rows=876)
-    new_result.result_file.save(name="test", content=ContentFile("hello world"))
-    new_result.save()
-
-    response = client.get(reverse("connections:results", args=[new_result.id]))
-
-    assert response.context["result"] == new_result
+    response = client.get(reverse("connections:results", args=[new_query_result.id]))
+    assert response.status_code == HTTPStatus.OK
+    assert response.context["result"] == new_query_result
     assertTemplateUsed(response=response, template_name="connections/results.html")
+
+
+def test_download_valid_result(client, new_query_result):
+    """Test download of an example results file."""
+
+    response = client.get(
+        reverse("connections:download_results", args=[new_query_result.id])
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert b"".join(response.streaming_content) == b"hello world"
+    assert response["Content-Disposition"] == 'attachment; filename="test"'

@@ -11,9 +11,6 @@ class Command(BaseCommand):
     help = "Delete query results older than settings.RESULT_VALIDITY_MINUTES"
 
     def handle(self, *args, **options):
-        deleted, _ = QueryResult.objects.expired().delete()
-        self.stdout.write(f"Deleted {deleted} expired objects")
-
         expiry_time = timezone.now() - timedelta(
             minutes=settings.RESULT_VALIDITY_MINUTES
         )

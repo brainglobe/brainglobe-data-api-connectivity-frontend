@@ -1,6 +1,7 @@
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
+from crispy_forms.bootstrap import StrictButton
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.helper import Layout
 from django import forms
 
 from . import graph_data
@@ -34,4 +35,15 @@ class DirectConnectionsForm(forms.Form):
 
         self.fields["region"].choices = _fetch_regions(sex)
         self.helper = FormHelper()
-        self.helper.add_input(Submit("submit", "Submit"))
+        self.helper.form_class = "query-form"
+        self.helper.layout = Layout(
+            "region",
+            "node_as",
+            StrictButton(
+                '<span class="query-spinner spinner-border spinner-border-sm '
+                'd-none" aria-hidden="true"></span> '
+                '<span role="status" class="query-text">Submit</span>',
+                type="submit",
+                css_class="btn btn-primary submit-query-btn",
+            ),
+        )

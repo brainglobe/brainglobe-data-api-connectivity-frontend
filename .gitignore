@@ -148,11 +148,7 @@ typings/
 
 
 ### VisualStudioCode template
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
 *.code-workspace
 
 # Local History for devcontainer
@@ -275,3 +271,7 @@ brainglobe_data_api_connectivity_frontend/media/
 .env
 .envs/*
 !.envs/.local/
+
+# temporary files
+brainglobe_data_api_connectivity_frontend/connections/data/
+tmp/

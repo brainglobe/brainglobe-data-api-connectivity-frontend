@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Browse connections{% endblock title %}
+{% block content %}
+  <h1>Browse {{ sex }} connections</h1>
+  <h2>Direct connections:</h2>
+  {% crispy form %}
+{% endblock content %}

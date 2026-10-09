@@ -95,7 +95,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "brainglobe_data_api_connectivity_frontend.users",
-    # Your stuff: custom apps go here
+    "brainglobe_data_api_connectivity_frontend.connections",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -278,7 +278,7 @@ REDIS_SSL = REDIS_URL.startswith("rediss://")
 
 # django-allauth
 # ------------------------------------------------------------------------------
-ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
+ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", False)
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_LOGIN_METHODS = {"email"}
 # https://docs.allauth.org/en/latest/account/configuration.html
@@ -311,3 +311,4 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+CONNECTIONS_DATA_DIR = APPS_DIR / "connections" / "data"

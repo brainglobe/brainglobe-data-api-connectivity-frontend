@@ -23,8 +23,14 @@ urlpatterns = [
         ),
     ),
     path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
-    # ...
+    # connectivity app urls
+    path(
+        "connections/",
+        include(
+            "brainglobe_data_api_connectivity_frontend.connections.urls",
+            namespace="connections",
+        ),
+    ),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

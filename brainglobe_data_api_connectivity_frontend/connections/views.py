@@ -33,7 +33,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
         form = DirectConnectionsForm(request.POST, sex=sex)
 
         if form.is_valid():
-            node_as = NodeIs[form.cleaned_data["node_as"]]
+            node0_as = NodeIs[form.cleaned_data["node0_as"]]
             connections_lookup = ConnectionsLookup[
                 form.cleaned_data["connections_lookup"]
             ]
@@ -44,7 +44,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
                 sex=sex,
                 node0=node0,
                 connections_lookup=connections_lookup,
-                node0_as=node_as,
+                node0_as=node0_as,
                 node1=node1 if node1 != "" else None,
             )
 

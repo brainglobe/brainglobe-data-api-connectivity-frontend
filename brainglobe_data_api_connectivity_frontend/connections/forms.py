@@ -35,7 +35,7 @@ class DirectConnectionsForm(forms.Form):
         required=True,
     )
 
-    node_as = forms.ChoiceField(
+    node0_as = forms.ChoiceField(
         label="Node 0 as",
         choices=[(option.name, option.name) for option in NodeIs],
         required=True,

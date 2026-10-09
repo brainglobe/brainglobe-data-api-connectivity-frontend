@@ -6,7 +6,7 @@ from brainglobe_data_api_connectivity_frontend.connections.forms import (
 
 
 @pytest.mark.parametrize(
-    ("sex", "expected_choices"),
+    ("sex", "expected_nodes"),
     [
         pytest.param(
             "female",
@@ -26,12 +26,22 @@ from brainglobe_data_api_connectivity_frontend.connections.forms import (
         ),
     ],
 )
-def test_direct_connections_form(sex, expected_choices):
+def test_direct_connections_form(sex, expected_nodes):
     """Test choices are correctly populated from graph."""
 
     form = DirectConnectionsForm(sex=sex)
-    region_choices = dict(form.fields["region"].choices)
-    node_as_choices = dict(form.fields["node_as"].choices)
+    field_choices = {}
+    for field in form.fields:
+        field_choices[field.name] = dict(field.choices)
 
-    assert region_choices == expected_choices
-    assert node_as_choices == {"ANY": "ANY", "OUTPUT": "OUTPUT", "INPUT": "INPUT"}
+    expected_nodes_with_blank = expected_nodes.copy()
+    expected_nodes_with_blank[""] = "-----"
+
+    assert field_choices["node0"] == expected_nodes
+    assert field_choices["node1"] == expected_nodes_with_blank
+    assert field_choices["connections_lookup"] == {"ALL": "ALL", "REPORTED": "REPORTED"}
+    assert field_choices["node0_as"] == {
+        "ANY": "ANY",
+        "OUTPUT": "OUTPUT",
+        "INPUT": "INPUT",
+    }

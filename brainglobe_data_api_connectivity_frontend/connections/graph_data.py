@@ -6,6 +6,9 @@ from brainglobe_data_api_connectivity.connections import Connections
 from django.conf import settings
 
 if TYPE_CHECKING:
+    from brainglobe_data_api_connectivity.connections.query_opts import (
+        ConnectionsLookup,
+    )
     from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 
 
@@ -38,17 +41,27 @@ def get_connections(sex: Sex) -> Connections:
     )
 
 
-def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFrame:
-    """Retrieve the direct connections of a region.
+def direct_connections(
+    sex: Sex,
+    node0: str,
+    connections_lookup: ConnectionsLookup,
+    node0_as: NodeIs,
+    node1: str | None = None,
+) -> pl.DataFrame:
+    """Retrieve the direct connections of a node.
 
     Parameters
     ----------
     sex : Sex
         The sex to query (male / female)
-    region_id : str
-        The region id e.g. GPl_1
-    node_as : NodeIs
-        The role of the region node - INPUT, OUTPUT or ANY.
+    node0 : str
+        The region id of node 0 e.g. GPl_1
+    connections_lookup: ConnectionsLookup
+        The source to use when searching for connections.
+    node0_as : NodeIs
+        The role of node_0 - INPUT, OUTPUT or ANY.
+    node1: str, optional
+        The region id of node 1 e.g. GPl_2
 
     Returns
     -------
@@ -56,24 +69,44 @@ def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFram
         A polars dataframe with two columns: region_id and node_as
     """
 
-    # Get index of node with specified region_id
     connections = get_connections(sex)
-    node_index = connections.node_indexes_from_information(
-        pl.col("region_id") == region_id
+
+    # Look for direct connections of node0 (to any other node)
+    if node1 is None:
+        # Get index of node with specified region_id
+        node_index = connections.node_indexes_from_information(
+            pl.col("region_id") == node0
+        )
+        if len(node_index) != 1:
+            msg = f"Found {len(node_index)} nodes with name {node0}"
+            raise ValueError(msg)
+
+        directs = connections.direct_connections(
+            node_internal_index=node_index[0],
+            node_as=node0_as,
+            connections_lookup=connections_lookup,
+        )
+
+        result_dfs = []
+        col_names = ["termination_region_id", "origin_region_id"]
+        for node_list, col_name in zip(directs, col_names, strict=True):
+            node_df = (
+                connections.node_information_from_index(node_list)
+                .select("region_id")
+                .rename({"region_id": col_name})
+            )
+            result_dfs.append(node_df)
+
+        result_df = pl.concat(result_dfs, how="diagonal").fill_null(node0)
+
+        # make sure columns are in order (for ease of reading result)
+        return result_df.select(["origin_region_id", "termination_region_id"])
+
+    # Look for direct connections of node0 to node1
+    directs = connections.direct_connection_between(
+        node0={"region_id": node0},
+        node1={"region_id": node1},
+        connections_lookup=connections_lookup,
+        node0_as=node0_as,
     )
-    if len(node_index) != 1:
-        msg = f"Found {len(node_index)} nodes with name {region_id}"
-        raise ValueError(msg)
-
-    # Get ids of nodes with direct connection
-    directs = connections.direct_connections(
-        node_internal_index=node_index[0], node_as=node_as
-    )
-
-    result_dfs = []
-    for node_list, source in zip(directs, ["input", "output"], strict=True):
-        node_df = connections.node_information_from_index(node_list).select("region_id")
-        node_df = node_df.with_columns(pl.lit(source).alias("node_as"))
-        result_dfs.append(node_df)
-
-    return pl.concat(result_dfs)
+    return directs.select(["origin_region_id", "termination_region_id"])

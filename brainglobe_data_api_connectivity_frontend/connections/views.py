@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from django.core.files.base import ContentFile
 from django.http import FileResponse
@@ -33,8 +34,18 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
 
         if form.is_valid():
             node_as = NodeIs[form.cleaned_data["node_as"]]
+            connections_lookup = ConnectionsLookup[
+                form.cleaned_data["connections_lookup"]
+            ]
+            node0 = form.cleaned_data["node0"]
+            node1 = form.cleaned_data["node1"]
+
             result_df = direct_connections(
-                sex=sex, region_id=form.cleaned_data["region"], node_as=node_as
+                sex=sex,
+                node0=node0,
+                connections_lookup=connections_lookup,
+                node0_as=node_as,
+                node1=node1 if node1 != "" else None,
             )
 
             query_result = QueryResult(sex=sex, n_rows=len(result_df))

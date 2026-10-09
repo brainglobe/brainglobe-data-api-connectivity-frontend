@@ -19,12 +19,12 @@ def _fetch_region_ids(sex: str):
 class DirectConnectionsForm(forms.Form):
     """Form to query direct connections of a node"""
 
-    node_0 = forms.ChoiceField(
+    node0 = forms.ChoiceField(
         label="Node 0",
         required=True,
     )
 
-    node_1 = forms.ChoiceField(
+    node1 = forms.ChoiceField(
         label="Node 1",
         required=False,
     )
@@ -46,10 +46,10 @@ class DirectConnectionsForm(forms.Form):
 
         region_ids = _fetch_region_ids(sex)
         # Add blank option for optional node_1
-        region_ids_with_blank = [(None, "------"), *region_ids]
+        region_ids_with_blank = [("", "------"), *region_ids]
 
-        self.fields["node_0"].choices = region_ids
-        self.fields["node_1"].choices = region_ids_with_blank
+        self.fields["node0"].choices = region_ids
+        self.fields["node1"].choices = region_ids_with_blank
 
         self.helper = FormHelper()
         self.helper.add_input(Submit("submit", "Submit"))

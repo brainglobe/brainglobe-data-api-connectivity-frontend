@@ -31,11 +31,11 @@ def test_direct_connections_form(sex, expected_nodes):
 
     form = DirectConnectionsForm(sex=sex)
     field_choices = {}
-    for field in form.fields:
-        field_choices[field.name] = dict(field.choices)
+    for name, field in form.fields.items():
+        field_choices[name] = dict(field.choices)
 
     expected_nodes_with_blank = expected_nodes.copy()
-    expected_nodes_with_blank[""] = "-----"
+    expected_nodes_with_blank[""] = "------"
 
     assert field_choices["node0"] == expected_nodes
     assert field_choices["node1"] == expected_nodes_with_blank

@@ -99,14 +99,13 @@ def direct_connections(
 
         result_df = pl.concat(result_dfs, how="diagonal").fill_null(node0)
 
-        # make sure columns are in order (for ease of reading result)
-        return result_df.select(["origin_region_id", "termination_region_id"])
+    else:
+        # Look for direct connections of node0 to node1
+        result_df = connections.direct_connection_between(
+            node0={"region_id": node0},
+            node1={"region_id": node1},
+            connections_lookup=connections_lookup,
+            node0_as=node0_as,
+        )
 
-    # Look for direct connections of node0 to node1
-    directs = connections.direct_connection_between(
-        node0={"region_id": node0},
-        node1={"region_id": node1},
-        connections_lookup=connections_lookup,
-        node0_as=node0_as,
-    )
-    return directs.select(["origin_region_id", "termination_region_id"])
+    return result_df.select(["origin_region_id", "termination_region_id"])

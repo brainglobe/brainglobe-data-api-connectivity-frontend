@@ -47,3 +47,43 @@ class DirectConnectionsForm(forms.Form):
                 css_class="btn btn-primary submit-query-btn",
             ),
         )
+
+
+class ShortestPathForm(forms.Form):
+    """Form to query the path between two nodes."""
+
+    region0 = forms.ChoiceField(
+        label="Input region name",
+        required=True,
+    )
+
+    region1 = forms.ChoiceField(
+        label="Output region name",
+        required=True,
+    )
+
+    node_as = forms.ChoiceField(
+        label="Node as",
+        choices=[(option.name, option.name) for option in NodeIs],
+        required=True,
+    )
+
+    def __init__(self, *args, sex: str, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        regions = _fetch_regions(sex)
+        self.fields["region0"].choices = regions
+        self.fields["region1"].choices = regions
+        self.helper = FormHelper()
+        self.helper.form_class = "query-form"
+        self.helper.layout = Layout(
+            "region0",
+            "region1",
+            StrictButton(
+                '<span class="query-spinner spinner-border spinner-border-sm '
+                'd-none" aria-hidden="true"></span> '
+                '<span role="status" class="query-text">Submit</span>',
+                type="submit",
+                css_class="btn btn-primary submit-query-btn",
+            ),
+        )

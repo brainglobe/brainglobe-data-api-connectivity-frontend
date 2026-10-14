@@ -15,6 +15,7 @@ from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
 )
 
 from .forms import DirectConnectionsForm
+from .forms import ShortestPathForm
 from .models import QueryResult
 
 if TYPE_CHECKING:
@@ -45,10 +46,13 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
 
             return redirect("connections:results", result_id=query_result.id)
     else:
-        form = DirectConnectionsForm(sex=sex)
+        connections_form = DirectConnectionsForm(sex=sex)
+        path_form = ShortestPathForm(sex=sex)
 
     return render(
-        request, "connections/browse_connections.html", {"form": form, "sex": sex}
+        request,
+        "connections/browse_connections.html",
+        {"connections_form": connections_form, "path_form": path_form, "sex": sex},
     )
 
 

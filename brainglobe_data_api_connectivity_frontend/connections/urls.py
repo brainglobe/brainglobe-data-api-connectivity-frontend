@@ -5,6 +5,7 @@ from . import views
 app_name = "connections"
 urlpatterns = [
     path("<str:sex>", views.browse_connections, name="browse_connections"),
+    path("run_query/<str:sex>/<str:query_type>", views.run_query, name="run_query"),
     path("results/<int:result_id>/", views.results, name="results"),
     path(
         "results/<int:result_id>/download/",

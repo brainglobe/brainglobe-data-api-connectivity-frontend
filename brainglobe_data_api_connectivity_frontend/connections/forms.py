@@ -58,7 +58,7 @@ class DirectConnectionsForm(BaseQueryForm):
         )
 
 
-class ShortestPathForm(BaseQueryForm):
+class BestPathForm(BaseQueryForm):
     """Form to query the path between two nodes."""
 
     region0 = forms.ChoiceField(

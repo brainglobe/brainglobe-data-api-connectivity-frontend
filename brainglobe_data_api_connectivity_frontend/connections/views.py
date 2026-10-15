@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-import polars as pl
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from django.core.files.base import ContentFile
 from django.http import FileResponse
@@ -11,16 +10,21 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
+    DijkstraStrategies,
+)
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import best_path
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
     direct_connections,
 )
 
+from .forms import BestPathForm
 from .forms import DirectConnectionsForm
-from .forms import ShortestPathForm
 from .models import QueryResult
 
 if TYPE_CHECKING:
+    import polars as pl
     from django.http import HttpRequest
 
 
@@ -45,7 +49,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
 
     _check_sex_valid(sex)
     connections_form = DirectConnectionsForm(sex=sex)
-    path_form = ShortestPathForm(sex=sex)
+    path_form = BestPathForm(sex=sex)
 
     return render(
         request,
@@ -74,10 +78,16 @@ def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse
 def run_path_query(request: HttpRequest, sex: str) -> HttpResponse:
 
     _check_sex_valid(sex)
-    form = ShortestPathForm(request.POST, sex=sex)
+    form = BestPathForm(request.POST, sex=sex)
 
     if form.is_valid():
-        result_df = pl.DataFrame()
+        strategy = DijkstraStrategies[form.cleaned_data["strategy"]]
+        result_df = best_path(
+            sex=sex,
+            source_region_id=form.cleaned_data["region0"],
+            target_region_id=form.cleaned_data["region1"],
+            strategy=strategy,
+        )
         return _handle_query_result(result_df, sex)
 
     return redirect("connections:browse_connections", sex=sex)

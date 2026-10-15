@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 import polars as pl
 from brainglobe_data_api_connectivity.connections import Connections
+from brainglobe_data_api_connectivity.dijkstra import dijkstra
 from brainglobe_data_api_connectivity.dijkstra.strategy import DijkstraStrategy
 from brainglobe_data_api_connectivity.dijkstra.strategy import FewestSteps
 from brainglobe_data_api_connectivity.dijkstra.strategy import WeakestTotalWeight
@@ -101,7 +102,41 @@ def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFram
     return pl.concat(result_dfs)
 
 
-def shortest_path(
+def best_path(
     sex: Sex, source_region_id: str, target_region_id: str, strategy: DijkstraStrategies
 ) -> pl.DataFrame:
-    pass
+
+    connections = get_connections(sex)
+    dikjstra_strategy = strategy.get_instance()
+
+    node_indexes = []
+    for region_id in [source_region_id, target_region_id]:
+        node_index = connections.node_indexes_from_information(
+            pl.col("region_id") == region_id
+        )
+        if len(node_index) != 1:
+            msg = f"Found {len(node_index)} nodes with name {region_id}"
+            raise ValueError(msg)
+
+        node_indexes.append(node_index[0])
+
+    path, _ = dijkstra(
+        connections.network,
+        source=node_indexes[0],
+        target=node_indexes[1],
+        strategy=dikjstra_strategy,
+    )
+
+    if path is None:
+        return pl.DataFrame({"region_id": []})
+
+    node_df = connections.node_information_from_index(path)
+    node_index_col = "__node_index"
+
+    # Force rows to be in order of given path via a left join.
+    # This also ensures that any nodes missing node info still get a row
+    # in the result df.
+    result_df = pl.DataFrame(
+        {node_index_col: path}, schema={node_index_col: node_df.schema[node_index_col]}
+    )
+    return result_df.join(node_df, on=node_index_col, how="left").select("region_id")

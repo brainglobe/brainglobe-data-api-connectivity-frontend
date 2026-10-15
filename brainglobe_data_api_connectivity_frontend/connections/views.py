@@ -35,6 +35,8 @@ def _check_sex_valid(sex: str) -> None:
 
 
 def _handle_query_result(result_df: pl.DataFrame, sex: Sex) -> HttpResponse:
+    """Save result_df to csv and create a record in the database"""
+
     query_result = QueryResult(sex=sex, n_rows=len(result_df))
     query_result.result_file.save(
         name="results.csv", content=ContentFile(result_df.write_csv())
@@ -60,6 +62,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
 
 @require_POST
 def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse:
+    """Run a direct connections query, using the submitted form data."""
 
     _check_sex_valid(sex)
     form = DirectConnectionsForm(request.POST, sex=sex)
@@ -76,6 +79,7 @@ def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse
 
 @require_POST
 def run_path_query(request: HttpRequest, sex: str) -> HttpResponse:
+    """Run a path query, using the submitted form data."""
 
     _check_sex_valid(sex)
     form = BestPathForm(request.POST, sex=sex)

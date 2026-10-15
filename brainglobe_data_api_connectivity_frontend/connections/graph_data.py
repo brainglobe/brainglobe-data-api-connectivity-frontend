@@ -105,6 +105,25 @@ def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFram
 def best_path(
     sex: Sex, source_region_id: str, target_region_id: str, strategy: DijkstraStrategies
 ) -> pl.DataFrame:
+    """Find the optimal path between a source and target region.
+
+    Parameters
+    ----------
+    sex : Sex
+        The sex to query (male / female)
+    source_region_id : str
+        The source region id e.g. GPl_1
+    target_region_id : str
+        The target region id e.g. GPl_2
+    strategy : DijkstraStrategies
+        The strategy to use for finding the path
+
+    Returns
+    -------
+    pl.DataFrame
+        A polars dataframe with one column: region_id. Each row is one node,
+        and they are in order of the best path.
+    """
 
     connections = get_connections(sex)
     dikjstra_strategy = strategy.get_instance()

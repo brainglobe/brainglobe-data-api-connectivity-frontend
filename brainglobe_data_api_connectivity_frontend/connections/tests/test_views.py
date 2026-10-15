@@ -142,6 +142,25 @@ def test_run_direct_connections_query(client, sex, region_id, expected_result):
     assertRedirects(response, reverse("connections:results", args=[latest_result.id]))
 
 
+def test_run_invalid_connections_query(client):
+    """
+    Test that an invalid form submission creates no results and redirects
+    to the search page.
+    """
+
+    n_results_before = QueryResult.objects.count()
+    response = client.post(
+        reverse("connections:run_direct_query", args=["male"]),
+        {"INVALID_FORM_DATA": "INVALID"},
+    )
+    n_results_after = QueryResult.objects.count()
+
+    # No new query results should have been created
+    assert n_results_before == n_results_after
+
+    assertRedirects(response, reverse("connections:browse_connections", args=["male"]))
+
+
 def test_view_missing_result(rf, next_result_id):
     """Test that trying to view a non-existent result id throws 404"""
 

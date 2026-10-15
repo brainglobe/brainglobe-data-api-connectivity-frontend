@@ -11,6 +11,7 @@ from pytest_django.asserts import assertRaisesMessage
 from pytest_django.asserts import assertRedirects
 from pytest_django.asserts import assertTemplateUsed
 
+from brainglobe_data_api_connectivity_frontend.connections.forms import BestPathForm
 from brainglobe_data_api_connectivity_frontend.connections.forms import (
     DirectConnectionsForm,
 )
@@ -55,22 +56,31 @@ def next_result_id():
     return latest_result.id + 1
 
 
-def test_browse_connections_invalid_sex(rf):
+@pytest.mark.parametrize(
+    "url",
+    [
+        "connections:browse_connections",
+        "connections:run_direct_query",
+        "connections:run_path_query",
+    ],
+)
+def test_browse_connections_invalid_sex(rf, url):
     """Test that an invalid sex routes to a 404 page."""
 
     sex = "INVALID"
-    request = rf.get(reverse("connections:browse_connections", args=[sex]))
+    request = rf.get(reverse(url, args=[sex]))
 
     with assertRaisesMessage(Http404, "Provided sex must be one of ['male', 'female']"):
         browse_connections(request, sex=sex)
 
 
 @pytest.mark.parametrize("sex", ["male", "female"])
-def test_browse_connections_get(client, sex):
+def test_browse_connections(client, sex):
     response = client.get(reverse("connections:browse_connections", args=[sex]))
 
     assert response.status_code == HTTPStatus.OK
-    assert isinstance(response.context["form"], DirectConnectionsForm)
+    assert isinstance(response.context["connections_form"], DirectConnectionsForm)
+    assert isinstance(response.context["path_form"], BestPathForm)
     assert response.context["sex"] == sex
     assertTemplateUsed(
         response=response, template_name="connections/browse_connections.html"
@@ -104,11 +114,12 @@ def test_browse_connections_get(client, sex):
         ),
     ],
 )
-def test_browse_connections_post(client, sex, region_id, expected_result):
+def test_run_direct_connections_query(client, sex, region_id, expected_result):
+    """Test that running a direct connections query produces the correct result."""
 
     n_results_before = QueryResult.objects.count()
     response = client.post(
-        reverse("connections:browse_connections", args=[sex]),
+        reverse("connections:run_direct_query", args=[sex]),
         {"region": region_id, "node_as": "ANY"},
     )
     n_results_after = QueryResult.objects.count()

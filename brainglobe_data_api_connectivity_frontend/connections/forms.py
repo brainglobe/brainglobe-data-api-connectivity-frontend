@@ -62,18 +62,20 @@ class ShortestPathForm(BaseQueryForm):
     """Form to query the path between two nodes."""
 
     region0 = forms.ChoiceField(
-        label="Input region name",
+        label="Source region name",
         required=True,
     )
 
     region1 = forms.ChoiceField(
-        label="Output region name",
+        label="Target region name",
         required=True,
     )
 
-    node_as = forms.ChoiceField(
-        label="Node as",
-        choices=[(option.name, option.name) for option in NodeIs],
+    strategy = forms.ChoiceField(
+        label="Strategy",
+        choices=[
+            (option.name, option.value) for option in graph_data.DijkstraStrategies
+        ],
         required=True,
     )
 

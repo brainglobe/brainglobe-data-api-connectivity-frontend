@@ -3,6 +3,10 @@ from typing import TYPE_CHECKING
 
 import polars as pl
 from brainglobe_data_api_connectivity.connections import Connections
+from brainglobe_data_api_connectivity.dijkstra.strategy import DijkstraStrategy
+from brainglobe_data_api_connectivity.dijkstra.strategy import FewestSteps
+from brainglobe_data_api_connectivity.dijkstra.strategy import WeakestTotalWeight
+from brainglobe_data_api_connectivity.dijkstra.strategy import WidestPath
 from django.conf import settings
 
 if TYPE_CHECKING:
@@ -12,6 +16,24 @@ if TYPE_CHECKING:
 class Sex(StrEnum):
     MALE = "male"
     FEMALE = "female"
+
+
+class DijkstraStrategies(StrEnum):
+    FEWEST_STEPS = "Fewest Steps"
+    WEAKEST_TOTAL_WEIGHT = "Weakest Total Weight"
+    WIDEST_PATH = "Widest Path"
+
+    def get_instance(self) -> DijkstraStrategy:
+        match self.name:
+            case "FEWEST_STEPS":
+                return FewestSteps()
+            case "WEAKEST_TOTAL_WEIGHT":
+                return WeakestTotalWeight()
+            case "WIDEST_PATH":
+                return WidestPath()
+            case _:
+                msg = f"Unknown strategy {self.name}"
+                raise ValueError(msg)
 
 
 def get_connections(sex: Sex) -> Connections:
@@ -77,3 +99,9 @@ def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFram
         result_dfs.append(node_df)
 
     return pl.concat(result_dfs)
+
+
+def shortest_path(
+    sex: Sex, source_region_id: str, target_region_id: str, strategy: DijkstraStrategies
+) -> pl.DataFrame:
+    pass

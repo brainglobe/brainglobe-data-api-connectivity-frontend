@@ -1,4 +1,3 @@
-import polars as pl
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from crispy_forms.bootstrap import StrictButton
 from crispy_forms.helper import FormHelper
@@ -19,25 +18,12 @@ def _fetch_regions(sex: str) -> list[tuple[str, str]]:
 
 
 class BaseQueryForm(forms.Form):
-    query_type = None
-
-    def run_query(self) -> pl.DataFrame:
-        raise NotImplementedError
-
-    def _check_form_ready(self) -> None:
-        if not self.is_bound or not self.is_valid():
-            msg = "form must be bound and valid"
-            raise ValueError(msg)
-
     def __init__(self, *args, sex: str, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.sex = sex
         self.helper = FormHelper()
         self.helper.form_class = "query-form"
-        self.helper.form_action = reverse(
-            "connections:run_query", args=[self.sex, self.query_type]
-        )
         self.helper.layout = Layout(
             *self.fields,
             StrictButton(
@@ -53,8 +39,6 @@ class BaseQueryForm(forms.Form):
 class DirectConnectionsForm(BaseQueryForm):
     """Form to query direct connections of a node"""
 
-    query_type = "direct"
-
     region = forms.ChoiceField(
         label="Region name",
         required=True,
@@ -66,23 +50,16 @@ class DirectConnectionsForm(BaseQueryForm):
         required=True,
     )
 
-    def run_query(self) -> pl.DataFrame:
-        self._check_form_ready()
-
-        node_as = NodeIs[self.cleaned_data["node_as"]]
-        return graph_data.direct_connections(
-            sex=self.sex, region_id=self.cleaned_data["region"], node_as=node_as
-        )
-
     def __init__(self, *args, sex: str, **kwargs) -> None:
         super().__init__(*args, sex=sex, **kwargs)
         self.fields["region"].choices = _fetch_regions(sex)
+        self.helper.form_action = reverse(
+            "connections:run_direct_query", args=[self.sex]
+        )
 
 
 class ShortestPathForm(BaseQueryForm):
     """Form to query the path between two nodes."""
-
-    query_type = "path"
 
     region0 = forms.ChoiceField(
         label="Input region name",
@@ -100,18 +77,10 @@ class ShortestPathForm(BaseQueryForm):
         required=True,
     )
 
-    def run_query(self) -> pl.DataFrame:
-        self._check_form_ready()
-        return pl.DataFrame()
-
     def __init__(self, *args, sex: str, **kwargs) -> None:
         super().__init__(*args, sex=sex, **kwargs)
 
         regions = _fetch_regions(sex)
         self.fields["region0"].choices = regions
         self.fields["region1"].choices = regions
-
-
-QUERY_FORMS = {
-    form.query_type: form for form in [DirectConnectionsForm, ShortestPathForm]
-}
+        self.helper.form_action = reverse("connections:run_path_query", args=[self.sex])

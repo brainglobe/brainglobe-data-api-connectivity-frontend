@@ -142,7 +142,14 @@ def test_run_direct_connections_query(client, sex, region_id, expected_result):
     assertRedirects(response, reverse("connections:results", args=[latest_result.id]))
 
 
-def test_run_invalid_connections_query(client):
+@pytest.mark.parametrize(
+    "url",
+    [
+        "connections:run_direct_query",
+        "connections:run_path_query",
+    ],
+)
+def test_run_invalid_queries(client, url):
     """
     Test that an invalid form submission creates no results and redirects
     to the search page.
@@ -150,7 +157,7 @@ def test_run_invalid_connections_query(client):
 
     n_results_before = QueryResult.objects.count()
     response = client.post(
-        reverse("connections:run_direct_query", args=["male"]),
+        reverse(url, args=["male"]),
         {"INVALID_FORM_DATA": "INVALID"},
     )
     n_results_after = QueryResult.objects.count()

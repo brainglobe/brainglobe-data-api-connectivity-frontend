@@ -24,9 +24,11 @@ if TYPE_CHECKING:
 def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
     """Main page for browsing connections of a specific sex."""
 
-    if sex not in Sex:
+    try:
+        sex = Sex(sex)
+    except ValueError as e:
         msg = f"Provided sex must be one of {[sex.value for sex in Sex]}"
-        raise Http404(msg)
+        raise Http404(msg) from e
 
     if request.method == "POST":
         form = DirectConnectionsForm(request.POST, sex=sex)
@@ -59,7 +61,7 @@ def results(request: HttpRequest, result_id: int) -> HttpResponse:
     return render(request, "connections/results.html", {"result": result})
 
 
-def download_results(request: HttpRequest, result_id: int) -> HttpResponse:
+def download_results(request: HttpRequest, result_id: int) -> FileResponse:
     """Download stored results file."""
 
     result = get_object_or_404(QueryResult, id=result_id)

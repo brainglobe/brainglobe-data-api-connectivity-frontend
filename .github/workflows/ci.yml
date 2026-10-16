@@ -24,8 +24,7 @@ jobs:
     steps:
       - uses: neuroinformatics-unit/actions/lint@v3
 
-  # With no caching at all the entire ci process takes 3m to complete!
-  pytest:
+  pytest-and-mypy:
     needs: [linting]
     runs-on: ubuntu-latest
 
@@ -85,6 +84,9 @@ jobs:
 
       - name: Run DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
+
+      - name: Run mypy
+        run: docker compose -f docker-compose.local.yml run --rm django mypy brainglobe_data_api_connectivity_frontend/
 
       - name: Run Django Tests
         run: docker compose -f docker-compose.local.yml run django pytest --cov --cov-report=xml

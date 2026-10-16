@@ -22,7 +22,7 @@ def _fetch_regions(sex: Sex) -> list[tuple[str, str]]:
 class BaseQueryForm(forms.Form):
     """Base query form to establish shared layout / settings for all forms."""
 
-    def __init__(self, *args, sex: str, **kwargs) -> None:
+    def __init__(self, *args, sex: Sex, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.sex = sex

@@ -30,8 +30,8 @@ def test_direct_connections_form(sex, expected_choices):
     """Test choices are correctly populated from graph."""
 
     form = DirectConnectionsForm(sex=sex)
-    region_choices = dict(form.fields["region"].choices)
-    node_as_choices = dict(form.fields["node_as"].choices)
+    region_choices = dict(form.fields["region"].choices)  # type: ignore[attr-defined]
+    node_as_choices = dict(form.fields["node_as"].choices)  # type: ignore[attr-defined]
 
     assert region_choices == expected_choices
     assert node_as_choices == {"ANY": "ANY", "OUTPUT": "OUTPUT", "INPUT": "INPUT"}

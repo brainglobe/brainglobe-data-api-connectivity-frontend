@@ -143,6 +143,67 @@ def test_run_direct_connections_query(client, sex, region_id, expected_result):
 
 
 @pytest.mark.parametrize(
+    ("sex", "source_region_id", "target_region_id", "expected_result"),
+    [
+        pytest.param(
+            "female",
+            "echo",
+            "charlie",
+            pl.DataFrame(
+                data={
+                    "region_id": ["echo", "bravo", "alpha", "charlie"],
+                }
+            ),
+            id="female",
+        ),
+        pytest.param(
+            "male",
+            "kilo",
+            "juliett",
+            pl.DataFrame(
+                data={
+                    "region_id": ["kilo", "hotel", "juliett"],
+                }
+            ),
+            id="male",
+        ),
+    ],
+)
+def test_run_path_query(
+    client, sex, source_region_id, target_region_id, expected_result
+):
+    """Test that running a path query produces the correct result."""
+
+    n_results_before = QueryResult.objects.count()
+    response = client.post(
+        reverse("connections:run_path_query", args=[sex]),
+        {
+            "region0": source_region_id,
+            "region1": target_region_id,
+            "strategy": "FEWEST_STEPS",
+        },
+    )
+    n_results_after = QueryResult.objects.count()
+
+    latest_result = QueryResult.objects.latest("id")
+
+    # Check one result was produced with correct metadata and csv file
+    assert n_results_after == n_results_before + 1
+    assert latest_result.n_rows == len(expected_result)
+    assert latest_result.sex == sex
+
+    result_file_path = Path(latest_result.result_file.path)
+    assert result_file_path.exists()
+    assert result_file_path.suffix == ".csv"
+
+    result_df = pl.read_csv(result_file_path)
+    assert_frame_equal(result_df, expected_result)
+
+    # The view should redirect to the results page on successful query
+    assertRedirects(response, reverse("connections:results", args=[latest_result.id]))
+
+
+@pytest.mark.parametrize(
     "url",
     [
         "connections:run_direct_query",

@@ -28,10 +28,14 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
-def _check_sex_valid(sex: str) -> None:
-    if sex not in Sex:
+def _get_valid_sex(sex: str) -> Sex:
+    """Check the provided sex is valid and return the matching enum."""
+
+    try:
+        return Sex(sex)
+    except ValueError as e:
         msg = f"Provided sex must be one of {[sex.value for sex in Sex]}"
-        raise Http404(msg)
+        raise Http404(msg) from e
 
 
 def _handle_query_result(result_df: pl.DataFrame, sex: Sex) -> HttpResponse:
@@ -49,7 +53,7 @@ def _handle_query_result(result_df: pl.DataFrame, sex: Sex) -> HttpResponse:
 def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
     """Main page for browsing connections of a specific sex."""
 
-    _check_sex_valid(sex)
+    sex = _get_valid_sex(sex)
     connections_form = DirectConnectionsForm(sex=sex)
     path_form = BestPathForm(sex=sex)
 
@@ -64,7 +68,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
 def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse:
     """Run a direct connections query, using the submitted form data."""
 
-    _check_sex_valid(sex)
+    sex = _get_valid_sex(sex)
     form = DirectConnectionsForm(request.POST, sex=sex)
 
     if form.is_valid():
@@ -81,7 +85,7 @@ def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse
 def run_path_query(request: HttpRequest, sex: str) -> HttpResponse:
     """Run a path query, using the submitted form data."""
 
-    _check_sex_valid(sex)
+    sex = _get_valid_sex(sex)
     form = BestPathForm(request.POST, sex=sex)
 
     if form.is_valid():

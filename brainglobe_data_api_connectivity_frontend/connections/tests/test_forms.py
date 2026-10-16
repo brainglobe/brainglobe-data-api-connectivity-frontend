@@ -65,9 +65,9 @@ def test_best_path_form(sex, expected_choices):
     """Test choices are correctly populated from graph."""
 
     form = BestPathForm(sex=sex)
-    source_region_choices = dict(form.fields["region0"].choices)
-    target_region_choices = dict(form.fields["region1"].choices)
-    strategy_choices = dict(form.fields["strategy"].choices)
+    source_region_choices = dict(form.fields["region0"].choices)  # type: ignore[attr-defined]
+    target_region_choices = dict(form.fields["region1"].choices)  # type: ignore[attr-defined]
+    strategy_choices = dict(form.fields["strategy"].choices)  # type: ignore[attr-defined]
 
     assert source_region_choices == expected_choices
     assert target_region_choices == expected_choices

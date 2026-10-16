@@ -4,9 +4,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.helper import Layout
 from crispy_forms.helper import reverse
 from django import forms
-from graph_data import DijkstraStrategies
-from graph_data import Sex
-from graph_data import get_connections
+
+from .graph_data import DijkstraStrategies
+from .graph_data import Sex
+from .graph_data import get_connections
 
 
 def _fetch_regions(sex: Sex) -> list[tuple[str, str]]:
@@ -84,6 +85,6 @@ class BestPathForm(BaseQueryForm):
         super().__init__(*args, sex=sex, **kwargs)
 
         regions = _fetch_regions(sex)
-        self.fields["region0"].choices = regions
-        self.fields["region1"].choices = regions
+        self.fields["region0"].choices = regions  # type: ignore[attr-defined]
+        self.fields["region1"].choices = regions  # type: ignore[attr-defined]
         self.helper.form_action = reverse("connections:run_path_query", args=[self.sex])

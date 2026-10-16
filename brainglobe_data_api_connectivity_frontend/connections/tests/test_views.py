@@ -88,101 +88,69 @@ def test_browse_connections(client, sex):
 
 
 @pytest.mark.parametrize(
-    ("sex", "region_id", "expected_result"),
+    ("url", "sex", "form_data", "expected_result"),
     [
         pytest.param(
+            "connections:run_direct_query",
             "female",
-            "delta",
+            {"region": "delta", "node_as": "ANY"},
             pl.DataFrame(
                 data={
                     "region_id": ["alpha", "bravo", "echo", "bravo", "charlie"],
                     "node_as": ["input", "input", "input", "output", "output"],
                 }
             ),
-            id="female",
+            id="Direct connections query - female",
         ),
         pytest.param(
+            "connections:run_direct_query",
             "male",
-            "juliett",
+            {"region": "juliett", "node_as": "ANY"},
             pl.DataFrame(
                 data={
                     "region_id": ["hotel", "india", "kilo", "hotel"],
                     "node_as": ["input", "input", "input", "output"],
                 }
             ),
-            id="male",
+            id="Direct connections query - male",
         ),
-    ],
-)
-def test_run_direct_connections_query(client, sex, region_id, expected_result):
-    """Test that running a direct connections query produces the correct result."""
-
-    n_results_before = QueryResult.objects.count()
-    response = client.post(
-        reverse("connections:run_direct_query", args=[sex]),
-        {"region": region_id, "node_as": "ANY"},
-    )
-    n_results_after = QueryResult.objects.count()
-
-    latest_result = QueryResult.objects.latest("id")
-
-    # Check one result was produced with correct metadata and csv file
-    assert n_results_after == n_results_before + 1
-    assert latest_result.n_rows == len(expected_result)
-    assert latest_result.sex == sex
-
-    result_file_path = Path(latest_result.result_file.path)
-    assert result_file_path.exists()
-    assert result_file_path.suffix == ".csv"
-
-    result_df = pl.read_csv(result_file_path)
-    assert_frame_equal(result_df, expected_result)
-
-    # The view should redirect to the results page on successful query
-    assertRedirects(response, reverse("connections:results", args=[latest_result.id]))
-
-
-@pytest.mark.parametrize(
-    ("sex", "source_region_id", "target_region_id", "expected_result"),
-    [
         pytest.param(
+            "connections:run_path_query",
             "female",
-            "echo",
-            "charlie",
+            {
+                "region0": "echo",
+                "region1": "charlie",
+                "strategy": "FEWEST_STEPS",
+            },
             pl.DataFrame(
                 data={
                     "region_id": ["echo", "bravo", "alpha", "charlie"],
                 }
             ),
-            id="female",
+            id="Path query - female",
         ),
         pytest.param(
+            "connections:run_path_query",
             "male",
-            "kilo",
-            "juliett",
+            {
+                "region0": "kilo",
+                "region1": "juliett",
+                "strategy": "FEWEST_STEPS",
+            },
             pl.DataFrame(
                 data={
                     "region_id": ["kilo", "hotel", "juliett"],
                 }
             ),
-            id="male",
+            id="Path query - male",
         ),
     ],
 )
-def test_run_path_query(
-    client, sex, source_region_id, target_region_id, expected_result
-):
-    """Test that running a path query produces the correct result."""
+def test_run_valid_query(client, url, sex, form_data, expected_result):
+    """Test that running a valid query produces the correct result."""
 
     n_results_before = QueryResult.objects.count()
-    response = client.post(
-        reverse("connections:run_path_query", args=[sex]),
-        {
-            "region0": source_region_id,
-            "region1": target_region_id,
-            "strategy": "FEWEST_STEPS",
-        },
-    )
+    response = client.post(reverse(url, args=[sex]), form_data)
     n_results_after = QueryResult.objects.count()
 
     latest_result = QueryResult.objects.latest("id")

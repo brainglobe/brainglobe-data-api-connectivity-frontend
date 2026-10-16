@@ -104,7 +104,7 @@ def results(request: HttpRequest, result_id: int) -> HttpResponse:
     return render(request, "connections/results.html", {"result": result})
 
 
-def download_results(request: HttpRequest, result_id: int) -> HttpResponse:
+def download_results(request: HttpRequest, result_id: int) -> FileResponse:
     """Download stored results file."""
 
     result = get_object_or_404(QueryResult, id=result_id)

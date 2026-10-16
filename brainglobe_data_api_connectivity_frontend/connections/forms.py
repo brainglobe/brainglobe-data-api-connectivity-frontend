@@ -4,14 +4,15 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.helper import Layout
 from crispy_forms.helper import reverse
 from django import forms
+from graph_data import DijkstraStrategies
+from graph_data import Sex
+from graph_data import get_connections
 
-from . import graph_data
 
-
-def _fetch_regions(sex: str) -> list[tuple[str, str]]:
+def _fetch_regions(sex: Sex) -> list[tuple[str, str]]:
     """Fetch available region names / indexes to populate dropdown menu"""
 
-    connections = graph_data.get_connections(sex)
+    connections = get_connections(sex)
 
     names = sorted(connections.nodes["region_id"])
     return [(name, name) for name in names]
@@ -52,9 +53,9 @@ class DirectConnectionsForm(BaseQueryForm):
         required=True,
     )
 
-    def __init__(self, *args, sex: str, **kwargs) -> None:
+    def __init__(self, *args, sex: Sex, **kwargs) -> None:
         super().__init__(*args, sex=sex, **kwargs)
-        self.fields["region"].choices = _fetch_regions(sex)
+        self.fields["region"].choices = _fetch_regions(sex)  # type: ignore[attr-defined]
         self.helper.form_action = reverse(
             "connections:run_direct_query", args=[self.sex]
         )
@@ -75,13 +76,11 @@ class BestPathForm(BaseQueryForm):
 
     strategy = forms.ChoiceField(
         label="Strategy",
-        choices=[
-            (option.name, option.value) for option in graph_data.DijkstraStrategies
-        ],
+        choices=[(option.name, option.value) for option in DijkstraStrategies],
         required=True,
     )
 
-    def __init__(self, *args, sex: str, **kwargs) -> None:
+    def __init__(self, *args, sex: Sex, **kwargs) -> None:
         super().__init__(*args, sex=sex, **kwargs)
 
         regions = _fetch_regions(sex)

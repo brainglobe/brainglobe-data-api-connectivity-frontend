@@ -5,6 +5,7 @@ from polars.testing import assert_frame_equal
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
     DijkstraStrategies,
 )
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import best_path
 
 
@@ -46,7 +47,7 @@ def test_best_path_strategies(strategy, expected_result):
     """
 
     result_df = best_path(
-        sex="female",
+        sex=Sex.FEMALE,
         source_region_id="charlie",
         target_region_id="echo",
         strategy=strategy,
@@ -79,7 +80,7 @@ def test_best_path_with_invalid_region(source_region_id, target_region_id):
 
     with pytest.raises(ValueError, match=r"Found 0 nodes with name INVALID"):
         best_path(
-            sex="female",
+            sex=Sex.FEMALE,
             source_region_id=source_region_id,
             target_region_id=target_region_id,
             strategy=DijkstraStrategies.FEWEST_STEPS,

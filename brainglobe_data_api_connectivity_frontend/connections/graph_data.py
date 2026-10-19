@@ -126,7 +126,7 @@ def best_path(
     """
 
     connections = get_connections(sex)
-    dikjstra_strategy = strategy.get_instance()
+    dijkstra_strategy = strategy.get_instance()
 
     node_indexes = []
     for region_id in [source_region_id, target_region_id]:
@@ -143,7 +143,7 @@ def best_path(
         connections.network,
         source=node_indexes[0],
         target=node_indexes[1],
-        strategy=dikjstra_strategy,
+        strategy=dijkstra_strategy,
     )
 
     if path is None:

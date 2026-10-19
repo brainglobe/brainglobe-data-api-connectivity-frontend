@@ -51,7 +51,7 @@ def test_cleanup_results_command(settings, validity_minutes, expected_n_deleted)
     call_command("cleanup_results", stdout=out)
 
     # Check the expected number of results have been deleted
-    assert f"Deleted {expected_n_deleted} expired files" in out.getvalue()
+    assert f"Deleted {expected_n_deleted} expired results" in out.getvalue()
     assert len(QueryResult.objects.all()) == len(result_file_paths) - expected_n_deleted
 
     for i, result_path in enumerate(result_file_paths):
@@ -59,3 +59,27 @@ def test_cleanup_results_command(settings, validity_minutes, expected_n_deleted)
             assert not result_path.exists()
         else:
             assert result_path.exists()
+
+
+@pytest.mark.django_db
+def test_cleanup_with_missing_results_file(settings):
+    """
+    Test that a QueryResult with a missing result_file can be deleted
+    without errors.
+    """
+
+    settings.RESULT_VALIDITY_MINUTES = 10
+
+    # Make sure query result table is empty
+    QueryResult.objects.all().delete()
+    assert len(QueryResult.objects.all()) == 0
+
+    # Add a result with no result file
+    create_query_result(result_file=False, minutes_ago=20)
+
+    out = StringIO()
+    call_command("cleanup_results", stdout=out)
+
+    # The result should have been deleted successfully
+    assert "Deleted 1 expired results" in out.getvalue()
+    assert len(QueryResult.objects.all()) == 0

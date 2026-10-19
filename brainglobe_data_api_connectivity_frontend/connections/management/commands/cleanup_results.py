@@ -21,4 +21,4 @@ class Command(BaseCommand):
             result.result_file.delete(save=True)  # delete the result file
             result.delete()  # delete the entry in the database
             n_results_deleted += 1
-        self.stdout.write(f"Deleted {n_results_deleted} expired files")
+        self.stdout.write(f"Deleted {n_results_deleted} expired results")

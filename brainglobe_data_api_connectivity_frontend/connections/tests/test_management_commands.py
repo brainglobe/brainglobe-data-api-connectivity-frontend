@@ -9,25 +9,53 @@ from brainglobe_data_api_connectivity_frontend.connections.tests.helpers import 
 )
 
 
+@pytest.mark.parametrize(
+    ("validity_minutes", "expected_n_deleted"),
+    [
+        pytest.param(
+            30,
+            2,
+            id="2 expired",
+        ),
+        pytest.param(
+            100,
+            1,
+            id="1 expired",
+        ),
+        pytest.param(
+            200,
+            0,
+            id="0 expired",
+        ),
+    ],
+)
 @pytest.mark.django_db
-def test_cleanup_results_command(settings):
+def test_cleanup_results_command(settings, validity_minutes, expected_n_deleted):
+    """Test that all results older than RESULT_VALIDITY_MINUTES are deleted."""
 
-    settings.RESULT_VALIDITY_MINUTES = 10
+    settings.RESULT_VALIDITY_MINUTES = validity_minutes
 
     # Make sure query result table is empty
     QueryResult.objects.all().delete()
     assert len(QueryResult.objects.all()) == 0
 
-    # Add new query results - 2 have expired (one with a file and one without),
-    # and 1 is still valid
-    expired_file_path = create_query_result(result_file=True, minutes_ago=120)
-    create_query_result(result_file=False, minutes_ago=60)
-    valid_file_path = create_query_result(result_file=True)
+    # Add query results - one 120 minutes ago, one 60 minutes ago and one
+    # at the current time
+    result_file_paths = []
+    minutes_ago = [120, 60, None]
+    result_file_paths = [
+        create_query_result(result_file=True, minutes_ago=time) for time in minutes_ago
+    ]
 
     out = StringIO()
     call_command("cleanup_results", stdout=out)
 
-    assert "Deleted 2 expired files" in out.getvalue()
-    assert len(QueryResult.objects.all()) == 1
-    assert not expired_file_path.exists()
-    assert valid_file_path.exists()
+    # Check the expected number of results have been deleted
+    assert f"Deleted {expected_n_deleted} expired files" in out.getvalue()
+    assert len(QueryResult.objects.all()) == len(result_file_paths) - expected_n_deleted
+
+    for i, result_path in enumerate(result_file_paths):
+        if i < expected_n_deleted:
+            assert not result_path.exists()
+        else:
+            assert result_path.exists()

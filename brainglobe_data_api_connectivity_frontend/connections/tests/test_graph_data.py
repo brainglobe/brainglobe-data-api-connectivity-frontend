@@ -52,3 +52,35 @@ def test_best_path_strategies(strategy, expected_result):
         strategy=strategy,
     )
     assert_frame_equal(result_df, expected_result)
+
+
+@pytest.mark.parametrize(
+    ("source_region_id", "target_region_id"),
+    [
+        pytest.param(
+            "INVALID",
+            "charlie",
+            id="Source invalid",
+        ),
+        pytest.param(
+            "charlie",
+            "INVALID",
+            id="Target invalid",
+        ),
+        pytest.param(
+            "INVALID",
+            "INVALID-2",
+            id="Both invalid",
+        ),
+    ],
+)
+def test_best_path_with_invalid_region(source_region_id, target_region_id):
+    """Test that querying an invalid region id raises a ValueError"""
+
+    with pytest.raises(ValueError, match=r"Found 0 nodes with name INVALID"):
+        best_path(
+            sex="female",
+            source_region_id=source_region_id,
+            target_region_id=target_region_id,
+            strategy=DijkstraStrategies.FEWEST_STEPS,
+        )

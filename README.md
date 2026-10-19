@@ -61,3 +61,15 @@ source /entrypoint && set +euo pipefail
 
 pytest
 ```
+
+## Run mypy
+
+Run mypy locally with:
+```bash
+docker compose -f docker-compose.local.yml run --rm django mypy brainglobe_data_api_connectivity_frontend/
+```
+
+Or, as in the [testing section](#run-the-tests), you can enter a running container and call:
+```bash
+mypy brainglobe_data_api_connectivity_frontend/
+```

@@ -1,15 +1,17 @@
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
+from crispy_forms.bootstrap import StrictButton
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.helper import Layout
 from django import forms
 
-from . import graph_data
+from .graph_data import Sex
+from .graph_data import get_connections
 
 
-def _fetch_regions(sex: str):
+def _fetch_regions(sex: Sex):
     """Fetch available region names / indexes to populate dropdown menu"""
 
-    connections = graph_data.get_connections(sex)
+    connections = get_connections(sex)
 
     names = sorted(connections.nodes["region_id"])
     return [(name, name) for name in names]
@@ -29,9 +31,20 @@ class DirectConnectionsForm(forms.Form):
         required=True,
     )
 
-    def __init__(self, *args, sex: str, **kwargs):
+    def __init__(self, *args, sex: Sex, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["region"].choices = _fetch_regions(sex)
+        self.fields["region"].choices = _fetch_regions(sex)  # type: ignore[attr-defined]
         self.helper = FormHelper()
-        self.helper.add_input(Submit("submit", "Submit"))
+        self.helper.form_class = "query-form"
+        self.helper.layout = Layout(
+            "region",
+            "node_as",
+            StrictButton(
+                '<span class="query-spinner spinner-border spinner-border-sm '
+                'd-none" aria-hidden="true"></span> '
+                '<span role="status" class="query-text">Submit</span>',
+                type="submit",
+                css_class="btn btn-primary submit-query-btn",
+            ),
+        )

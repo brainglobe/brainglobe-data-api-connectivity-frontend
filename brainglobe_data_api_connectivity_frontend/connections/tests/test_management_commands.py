@@ -1,4 +1,5 @@
 from io import StringIO
+from pathlib import Path
 
 import pytest
 from django.core.management import call_command
@@ -41,10 +42,10 @@ def test_cleanup_results_command(settings, validity_minutes, expected_n_deleted)
 
     # Add query results - one 120 minutes ago, one 60 minutes ago and one
     # at the current time
-    result_file_paths = []
     minutes_ago = [120, 60, None]
     result_file_paths = [
-        create_query_result(result_file=True, minutes_ago=time) for time in minutes_ago
+        Path(create_query_result(result_file=True, minutes_ago=time).result_file.path)
+        for time in minutes_ago
     ]
 
     out = StringIO()

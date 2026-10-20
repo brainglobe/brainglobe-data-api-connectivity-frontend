@@ -42,7 +42,7 @@ def test_cleanup_results_command(settings, validity_minutes, expected_n_deleted)
 
     # Add query results - one 120 minutes ago, one 60 minutes ago and one
     # at the current time
-    minutes_ago = [120, 60, None]
+    minutes_ago = [120, 60, 0]
     result_file_paths = [
         Path(create_query_result(result_file=True, minutes_ago=time).result_file.path)
         for time in minutes_ago

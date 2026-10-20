@@ -8,15 +8,15 @@ from brainglobe_data_api_connectivity_frontend.connections.models import QueryRe
 
 def create_query_result(
     *,
-    minutes_ago: int | None = None,
+    minutes_ago: int = 0,
     result_file: bool = True,
 ) -> QueryResult:
     """Create a new QueryResult in the database.
 
     Parameters
     ----------
-    minutes_ago : int | None, optional
-        If provided, overwrite the default created_at value (normally the
+    minutes_ago : int, optional
+        Overwrite the default created_at value (normally the
         current time) with current time - minutes_ago.
     result_file : bool, optional
         Whether to include a results file.
@@ -33,7 +33,7 @@ def create_query_result(
 
     result.save()  # Automatically sets created_at as the current time
 
-    if minutes_ago is not None:
+    if minutes_ago != 0:
         # Overwrite the default created_at time
         result.created_at = timezone.now() - timedelta(minutes=minutes_ago)
         result.save()

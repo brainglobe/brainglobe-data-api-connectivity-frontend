@@ -3,7 +3,6 @@ from pathlib import Path
 
 import polars as pl
 import pytest
-from django.core.files.base import ContentFile
 from django.http import Http404
 from django.urls import reverse
 from polars.testing import assert_frame_equal
@@ -15,6 +14,9 @@ from brainglobe_data_api_connectivity_frontend.connections.forms import (
     DirectConnectionsForm,
 )
 from brainglobe_data_api_connectivity_frontend.connections.models import QueryResult
+from brainglobe_data_api_connectivity_frontend.connections.tests.helpers import (
+    create_query_result,
+)
 from brainglobe_data_api_connectivity_frontend.connections.views import (
     browse_connections,
 )
@@ -22,26 +24,6 @@ from brainglobe_data_api_connectivity_frontend.connections.views import download
 from brainglobe_data_api_connectivity_frontend.connections.views import results
 
 pytestmark = pytest.mark.django_db
-
-
-@pytest.fixture
-def query_result_no_file():
-    """Add a new QueryResult to the database with no result_file"""
-
-    new_result = QueryResult(sex="female", n_rows=876)
-    new_result.save()
-
-    return new_result
-
-
-@pytest.fixture
-def query_result(query_result_no_file):
-    """Add a new QueryResult to the database including a result_file"""
-
-    query_result_no_file.result_file.save(
-        name="test", content=ContentFile("hello world")
-    )
-    return query_result_no_file
 
 
 @pytest.fixture
@@ -139,18 +121,21 @@ def test_view_missing_result(rf, next_result_id):
         results(request, result_id=next_result_id)
 
 
-def test_view_valid_result(client, query_result):
+def test_view_valid_result(client):
     """Test a valid result id is fetched and rendered on page."""
 
+    query_result = create_query_result()
     response = client.get(reverse("connections:results", args=[query_result.id]))
+
     assert response.status_code == HTTPStatus.OK
     assert response.context["result"] == query_result
     assertTemplateUsed(response=response, template_name="connections/results.html")
 
 
-def test_download_valid_result(client, query_result):
+def test_download_valid_result(client):
     """Test download of an example results file."""
 
+    query_result = create_query_result()
     response = client.get(
         reverse("connections:download_results", args=[query_result.id])
     )
@@ -167,10 +152,10 @@ def test_download_missing_result(rf, next_result_id):
         download_results(request, result_id=next_result_id)
 
 
-def test_download_result_with_no_file(rf, query_result_no_file):
+def test_download_result_with_no_file(rf):
     """Test that trying to download a result with no file throws 404"""
 
-    result_id = query_result_no_file.id
+    result_id = create_query_result(result_file=False).id
     request = rf.get(reverse("connections:download_results", args=[result_id]))
     with assertRaisesMessage(Http404, "File no longer available"):
         download_results(request, result_id=result_id)

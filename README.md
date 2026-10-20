@@ -5,6 +5,8 @@ A frontend to browse brain connectivity data.
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
+Below are instructions for running the web app locally for testing and development. For a production deployment, see the [production docs](./docs/prod_deployment.md).
+
 ## Running the web app locally
 
 ### Docker
@@ -38,6 +40,19 @@ To stop the app:
 ```bash
 docker compose -f docker-compose.local.yml down
 ```
+
+## Cleanup result files
+
+Result csv files will be written to `brainglobe_data_api_connectivity_frontend/media/results` as you use the app.
+
+To clean up old results, either delete files in this directory manually or run:
+```bash
+docker compose -f docker-compose.local.yml run --rm django python manage.py cleanup_results
+```
+
+This command will delete all result entries older than settings.RESULT_VALIDITY_MINUTES in the database (and their associated files). RESULT_VALIDITY_MINUTES can be adjusted inside `config/settings/base.py`.
+
+In a production deployment, this command will be run automatically at regular intervals using cron.
 
 ## Run the tests
 

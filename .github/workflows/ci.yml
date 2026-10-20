@@ -23,6 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: neuroinformatics-unit/actions/lint@v3
+        with:
+          python-version: 3.14
 
   pytest-and-mypy:
     needs: [linting]

@@ -36,6 +36,6 @@ TEMPLATES[0]["OPTIONS"]["debug"] = True  # type: ignore[index]
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "http://media.testserver/"
 
-# Your stuff...
+# connections app settings
 # ------------------------------------------------------------------------------
 CONNECTIONS_DATA_DIR = APPS_DIR / "connections" / "tests" / "data"

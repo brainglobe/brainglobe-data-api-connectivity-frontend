@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from django.core.files.base import ContentFile
 from django.http import FileResponse
@@ -16,7 +17,7 @@ from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import best_path
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
-    direct_connections,
+    get_connections,
 )
 
 from .forms import BestPathForm
@@ -73,8 +74,13 @@ def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse
 
     if form.is_valid():
         node_as = NodeIs[form.cleaned_data["node_as"]]
-        result_df = direct_connections(
-            sex=sex, region_id=form.cleaned_data["region"], node_as=node_as
+        connections_lookup = ConnectionsLookup[form.cleaned_data["connections_lookup"]]
+
+        result_df = get_connections(sex).direct_connection_info(
+            node={"region_id": form.cleaned_data["region"]},
+            node_as=node_as,
+            connections_lookup=connections_lookup,
+            return_edges=form.cleaned_data["return_edges"],
         )
         return _handle_query_result(result_df, sex)
 

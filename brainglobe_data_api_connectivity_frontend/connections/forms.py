@@ -1,3 +1,4 @@
+from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from crispy_forms.bootstrap import StrictButton
 from crispy_forms.helper import FormHelper
@@ -50,8 +51,20 @@ class DirectConnectionsForm(BaseQueryForm):
 
     node_as = forms.ChoiceField(
         label="Node as",
-        choices=[(option.name, option.name) for option in NodeIs],
+        choices=[(option.name, option.value) for option in NodeIs],
         required=True,
+        initial=NodeIs.ANY.name,
+    )
+
+    connections_lookup = forms.ChoiceField(
+        label="Connections lookup",
+        choices=[(option.name, option.value) for option in ConnectionsLookup],
+        required=True,
+        initial=ConnectionsLookup.REPORTED.name,
+    )
+
+    return_edges = forms.BooleanField(
+        label="Return edges", required=False, initial=False
     )
 
     def __init__(self, *args, sex: Sex, **kwargs) -> None:

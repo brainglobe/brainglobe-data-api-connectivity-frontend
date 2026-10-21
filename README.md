@@ -41,6 +41,16 @@ To stop the app:
 docker compose -f docker-compose.local.yml down
 ```
 
+### Adding users
+
+The first time you run the app, you will need to create a superuser to allow access. Run:
+```bash
+docker compose -f docker-compose.local.yml run --rm django python manage.py createsuperuser
+```
+
+This will prompt you for an email / password to use to access the app. This will also
+give you full access to the admin interface at: `http://localhost:8000/admin`.
+
 ## Cleanup result files
 
 Result csv files will be written to `brainglobe_data_api_connectivity_frontend/media/results` as you use the app.

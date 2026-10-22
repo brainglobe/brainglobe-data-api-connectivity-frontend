@@ -1,7 +1,5 @@
 # Deploying the app
 
-NOTE: these deployment instructions are a work in progress.
-
 ## Installation
 
 You will need to make sure [Docker](https://www.docker.com/) is installed on your server, and [docker compose](https://docs.docker.com/compose/) is available.
@@ -84,7 +82,14 @@ docker compose -f docker-compose.production.yml run --rm django python manage.py
 ```
 
 This will prompt you for an email / password to use to access the app. 
-This will also give you full access to the admin interface at: `https://neurome.brainglobe.info/DJANGO_ADMIN_URL` (replace DJANGO_ADMIN_URL with the value you set in `.envs/.production/.django`),
+This will also give you full access to the admin interface at: `https://neurome.brainglobe.info/DJANGO_ADMIN_URL` (replace DJANGO_ADMIN_URL with the value you set in `.envs/.production/.django`) and the main website.
+
+To add more users:
+- login to the admin interface
+- Click 'Add' next to Users
+- Enter an email and password
+- If you want them to be able to login to the admin interface, tick 'staff status'
+- If you want them to have full admin rights tick 'superuser status'
 
 ## Setting up automated deletion of old results
 

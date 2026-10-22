@@ -21,6 +21,7 @@ from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
 )
 
 from .forms import BestPathForm
+from .forms import DirectConnectionsBetweenForm
 from .forms import DirectConnectionsForm
 from .models import QueryResult
 
@@ -56,12 +57,18 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
 
     sex = _get_valid_sex(sex)
     connections_form = DirectConnectionsForm(sex=sex)
+    connections_between_form = DirectConnectionsBetweenForm(sex=sex)
     path_form = BestPathForm(sex=sex)
 
     return render(
         request,
         "connections/browse_connections.html",
-        {"connections_form": connections_form, "path_form": path_form, "sex": sex},
+        {
+            "connections_form": connections_form,
+            "connections_between_form": connections_between_form,
+            "path_form": path_form,
+            "sex": sex,
+        },
     )
 
 

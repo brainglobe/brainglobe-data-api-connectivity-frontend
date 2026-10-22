@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
   # psycopg dependencies
-  libpq-dev
+  libpq-dev \
+  # needed to install dependencies from github
+  git
 
 
 # Requirements are installed here to ensure they will be cached.
@@ -67,7 +69,7 @@ COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}
 RUN mkdir -p ${APP_HOME}/brainglobe_data_api_connectivity_frontend/media
 
 # make django owner of the WORKDIR directory as well.
-RUN chown django:django ${APP_HOME}
+RUN chown -R django:django ${APP_HOME}
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"

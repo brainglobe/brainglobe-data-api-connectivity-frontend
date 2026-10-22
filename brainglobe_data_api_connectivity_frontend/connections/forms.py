@@ -34,7 +34,7 @@ def _create_node_as_field(label: str = "Node as") -> forms.ChoiceField:
 def _create_connections_lookup_field(
     label: str = "Connections lookup",
 ) -> forms.ChoiceField:
-    """Create a field for teh ConnectionsLookup enum."""
+    """Create a field for the ConnectionsLookup enum."""
 
     return forms.ChoiceField(
         label=label,

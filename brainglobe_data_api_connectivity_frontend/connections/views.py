@@ -95,6 +95,30 @@ def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse
 
 
 @require_POST
+def run_direct_connections_between_query(
+    request: HttpRequest, sex: str
+) -> HttpResponse:
+    """Run a direct connections between query, using the submitted form data."""
+
+    sex = _get_valid_sex(sex)
+    form = DirectConnectionsBetweenForm(request.POST, sex=sex)
+
+    if form.is_valid():
+        node0_as = NodeIs[form.cleaned_data["node0_as"]]
+        connections_lookup = ConnectionsLookup[form.cleaned_data["connections_lookup"]]
+
+        result_df = get_connections(sex).direct_connection_between(
+            node0={"region_id": form.cleaned_data["region0"]},
+            node1={"region_id": form.cleaned_data["region1"]},
+            connections_lookup=connections_lookup,
+            node0_as=node0_as,
+        )
+        return _handle_query_result(result_df, sex)
+
+    return redirect("connections:browse_connections", sex=sex)
+
+
+@require_POST
 def run_path_query(request: HttpRequest, sex: str) -> HttpResponse:
     """Run a path query, using the submitted form data."""
 

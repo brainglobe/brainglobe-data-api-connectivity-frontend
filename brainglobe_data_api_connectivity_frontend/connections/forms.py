@@ -112,7 +112,7 @@ class DirectConnectionsBetweenForm(BaseQueryForm):
         self.fields["region0"].choices = regions  # type: ignore[attr-defined]
         self.fields["region1"].choices = regions  # type: ignore[attr-defined]
         self.helper.form_action = reverse(
-            "connections:run_direct_query", args=[self.sex]
+            "connections:run_direct_between_query", args=[self.sex]
         )
 
 

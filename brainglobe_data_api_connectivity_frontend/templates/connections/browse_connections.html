@@ -7,6 +7,8 @@
   <h1 class="my-3">Browse {{ sex }} connections</h1>
   <h2 class="mt-4">Direct connections:</h2>
   {% crispy connections_form %}
+  <h2 class="mt-4">Direct connections between:</h2>
+  {% crispy connections_between_form %}
   <h2 class="mt-4">Find path:</h2>
   {% crispy path_form %}
 {% endblock content %}

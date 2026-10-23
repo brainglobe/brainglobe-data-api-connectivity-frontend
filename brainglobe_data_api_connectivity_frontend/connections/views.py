@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from django.core.files.base import ContentFile
 from django.http import FileResponse
@@ -16,10 +17,11 @@ from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import best_path
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
-    direct_connections,
+    get_connections,
 )
 
 from .forms import BestPathForm
+from .forms import DirectConnectionsBetweenForm
 from .forms import DirectConnectionsForm
 from .models import QueryResult
 
@@ -55,12 +57,18 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
 
     sex = _get_valid_sex(sex)
     connections_form = DirectConnectionsForm(sex=sex)
+    connections_between_form = DirectConnectionsBetweenForm(sex=sex)
     path_form = BestPathForm(sex=sex)
 
     return render(
         request,
         "connections/browse_connections.html",
-        {"connections_form": connections_form, "path_form": path_form, "sex": sex},
+        {
+            "connections_form": connections_form,
+            "connections_between_form": connections_between_form,
+            "path_form": path_form,
+            "sex": sex,
+        },
     )
 
 
@@ -73,8 +81,37 @@ def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse
 
     if form.is_valid():
         node_as = NodeIs[form.cleaned_data["node_as"]]
-        result_df = direct_connections(
-            sex=sex, region_id=form.cleaned_data["region"], node_as=node_as
+        connections_lookup = ConnectionsLookup[form.cleaned_data["connections_lookup"]]
+
+        result_df = get_connections(sex).direct_connection_info(
+            node={"region_id": form.cleaned_data["region"]},
+            node_as=node_as,
+            connections_lookup=connections_lookup,
+            return_edges=form.cleaned_data["return_edges"],
+        )
+        return _handle_query_result(result_df, sex)
+
+    return redirect("connections:browse_connections", sex=sex)
+
+
+@require_POST
+def run_direct_connections_between_query(
+    request: HttpRequest, sex: str
+) -> HttpResponse:
+    """Run a direct connections between query, using the submitted form data."""
+
+    sex = _get_valid_sex(sex)
+    form = DirectConnectionsBetweenForm(request.POST, sex=sex)
+
+    if form.is_valid():
+        node0_as = NodeIs[form.cleaned_data["node0_as"]]
+        connections_lookup = ConnectionsLookup[form.cleaned_data["connections_lookup"]]
+
+        result_df = get_connections(sex).direct_connection_between(
+            node0={"region_id": form.cleaned_data["region0"]},
+            node1={"region_id": form.cleaned_data["region1"]},
+            connections_lookup=connections_lookup,
+            node0_as=node0_as,
         )
         return _handle_query_result(result_df, sex)
 

@@ -1,3 +1,4 @@
+from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 from crispy_forms.bootstrap import StrictButton
 from crispy_forms.helper import FormHelper
@@ -17,6 +18,30 @@ def _fetch_regions(sex: Sex) -> list[tuple[str, str]]:
 
     names = sorted(connections.nodes["region_id"])
     return [(name, name) for name in names]
+
+
+def _create_node_as_field(label: str = "Node as") -> forms.ChoiceField:
+    """Create a field for the NodeIs enum."""
+
+    return forms.ChoiceField(
+        label=label,
+        choices=[(option.name, option.value) for option in NodeIs],
+        required=True,
+        initial=NodeIs.ANY.name,
+    )
+
+
+def _create_connections_lookup_field(
+    label: str = "Connections lookup",
+) -> forms.ChoiceField:
+    """Create a field for the ConnectionsLookup enum."""
+
+    return forms.ChoiceField(
+        label=label,
+        choices=[(option.name, option.value) for option in ConnectionsLookup],
+        required=True,
+        initial=ConnectionsLookup.REPORTED.name,
+    )
 
 
 class BaseQueryForm(forms.Form):
@@ -48,10 +73,12 @@ class DirectConnectionsForm(BaseQueryForm):
         required=True,
     )
 
-    node_as = forms.ChoiceField(
-        label="Node as",
-        choices=[(option.name, option.name) for option in NodeIs],
-        required=True,
+    node_as = _create_node_as_field()
+
+    connections_lookup = _create_connections_lookup_field()
+
+    return_edges = forms.BooleanField(
+        label="Return edges", required=False, initial=True
     )
 
     def __init__(self, *args, sex: Sex, **kwargs) -> None:
@@ -59,6 +86,33 @@ class DirectConnectionsForm(BaseQueryForm):
         self.fields["region"].choices = _fetch_regions(sex)  # type: ignore[attr-defined]
         self.helper.form_action = reverse(
             "connections:run_direct_query", args=[self.sex]
+        )
+
+
+class DirectConnectionsBetweenForm(BaseQueryForm):
+    """Form to query direct connections between two nodes"""
+
+    region0 = forms.ChoiceField(
+        label="First region name",
+        required=True,
+    )
+
+    region1 = forms.ChoiceField(
+        label="Second region name",
+        required=True,
+    )
+
+    node0_as = _create_node_as_field(label="First region as")
+
+    connections_lookup = _create_connections_lookup_field()
+
+    def __init__(self, *args, sex: Sex, **kwargs) -> None:
+        super().__init__(*args, sex=sex, **kwargs)
+        regions = _fetch_regions(sex)
+        self.fields["region0"].choices = regions  # type: ignore[attr-defined]
+        self.fields["region1"].choices = regions  # type: ignore[attr-defined]
+        self.helper.form_action = reverse(
+            "connections:run_direct_between_query", args=[self.sex]
         )
 
 

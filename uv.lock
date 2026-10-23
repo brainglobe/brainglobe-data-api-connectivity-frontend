@@ -165,12 +165,13 @@ wheels = [
 
 [[package]]
 name = "brainglobe-data-api-connectivity"
-version = "0.1.dev28+g6d9418a91"
-source = { git = "https://github.com/brainglobe/brainglobe-data-api-connectivity#6d9418a9135e309ce64470d54eea1b71827baf52" }
+version = "0.1.dev38+gddb07bdf9"
+source = { git = "https://github.com/brainglobe/brainglobe-data-api-connectivity#ddb07bdf94b78641178f3d8fc75daf8a35d77f87" }
 dependencies = [
     { name = "openpyxl" },
     { name = "pandas" },
     { name = "polars" },
+    { name = "pooch" },
     { name = "rustworkx" },
 ]
 
@@ -1349,6 +1350,20 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/06/8f/d741afb1dcd1848161189e017d27972e7e78556d8dce66b94d4235093706/polars_runtime_32-1.44.2-cp310-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:c4a09fb14aad711526346efc0cb2015c2fd0555ce4118b6524e5debbaea65ff5", size = 49887654, upload-time = "2026-09-09T07:40:37.455Z" },
     { url = "https://files.pythonhosted.org/packages/ba/e7/c61c1c7eea37705920fe7c1302d1dd80d1165db2b928f0da3eae6d1ebb75/polars_runtime_32-1.44.2-cp310-abi3-win_amd64.whl", hash = "sha256:8598e7a20efba70bb74978c7df7af7c606ff4d79b9b48fdd808250b189bc9a13", size = 51297967, upload-time = "2026-09-09T07:40:41.993Z" },
     { url = "https://files.pythonhosted.org/packages/e7/a0/d0dd0d2ec95fa328dd47055905fae53ba3cd79f11c8973326ebe75a49e4c/polars_runtime_32-1.44.2-cp310-abi3-win_arm64.whl", hash = "sha256:d51040d3ab40157f6db3c62be59cab5b80fb3c8d158924769c4982a1c8eef730", size = 44303345, upload-time = "2026-09-09T07:40:47.081Z" },
+]
+
+[[package]]
+name = "pooch"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "platformdirs" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/83/43/85ef45e8b36c6a48546af7b266592dc32d7f67837a6514d111bced6d7d75/pooch-1.9.0.tar.gz", hash = "sha256:de46729579b9857ffd3e741987a2f6d5e0e03219892c167c6578c0091fb511ed", size = 61788, upload-time = "2026-01-30T19:15:09.649Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/2d/d4bf65e47cea8ff2c794a600c4fd1273a7902f268757c531e0ee9f18aa58/pooch-1.9.0-py3-none-any.whl", hash = "sha256:f265597baa9f760d25ceb29d0beb8186c243d6607b0f60b83ecf14078dbc703b", size = 67175, upload-time = "2026-01-30T19:15:08.36Z" },
 ]
 
 [[package]]

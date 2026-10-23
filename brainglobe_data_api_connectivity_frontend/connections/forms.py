@@ -78,7 +78,7 @@ class DirectConnectionsForm(BaseQueryForm):
     connections_lookup = _create_connections_lookup_field()
 
     return_edges = forms.BooleanField(
-        label="Return edges", required=False, initial=False
+        label="Return edges", required=False, initial=True
     )
 
     def __init__(self, *args, sex: Sex, **kwargs) -> None:

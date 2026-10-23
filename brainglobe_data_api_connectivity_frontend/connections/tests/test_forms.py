@@ -60,7 +60,7 @@ class TestQueryForms:
         form = DirectConnectionsForm(sex=sex)
         region_choices = dict(form.fields["region"].choices)  # type: ignore[attr-defined]
         node_as_choices = dict(form.fields["node_as"].choices)  # type: ignore[attr-defined]
-        connections_lookup_choices = dict(form.fields["connections_lookup"].choices)
+        connections_lookup_choices = dict(form.fields["connections_lookup"].choices)  # type: ignore[attr-defined]
 
         assert region_choices == expected_region_choices
         assert node_as_choices == expected_node_as_choices
@@ -79,7 +79,7 @@ class TestQueryForms:
         region0_choices = dict(form.fields["region0"].choices)  # type: ignore[attr-defined]
         region1_choices = dict(form.fields["region1"].choices)  # type: ignore[attr-defined]
         node0_as_choices = dict(form.fields["node0_as"].choices)  # type: ignore[attr-defined]
-        connections_lookup_choices = dict(form.fields["connections_lookup"].choices)
+        connections_lookup_choices = dict(form.fields["connections_lookup"].choices)  # type: ignore[attr-defined]
 
         assert region0_choices == expected_region_choices
         assert region1_choices == expected_region_choices

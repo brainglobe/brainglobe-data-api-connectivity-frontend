@@ -165,8 +165,8 @@ wheels = [
 
 [[package]]
 name = "brainglobe-data-api-connectivity"
-version = "0.1.dev37+g8956c3660"
-source = { git = "https://github.com/brainglobe/brainglobe-data-api-connectivity#8956c3660d6c312cf522dacc8907f00994c0d8fe" }
+version = "0.1.dev38+gddb07bdf9"
+source = { git = "https://github.com/brainglobe/brainglobe-data-api-connectivity#ddb07bdf94b78641178f3d8fc75daf8a35d77f87" }
 dependencies = [
     { name = "openpyxl" },
     { name = "pandas" },

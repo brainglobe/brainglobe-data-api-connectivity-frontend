@@ -14,11 +14,11 @@ services:
     depends_on:
       - postgres
     environment:
-      - NEUROME_DATA_DIR=/neurome_data
+      - NEUROME_DATA_DIR=/neurome_data  # set pooch cache location
     volumes:
       - /app/.venv
       - .:/app:z
-      - neurome_data:/neurome_data  # persist pooch's cache of neurome data
+      - neurome_data:/neurome_data  # persist pooch's cache
     env_file:
       - path: ./.envs/.local/.django
         required: false

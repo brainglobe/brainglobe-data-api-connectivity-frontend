@@ -3,6 +3,7 @@ volumes:
   production_postgres_data_backups: {}
   production_traefik: {}
   production_django_media: {}
+  production_neurome_data: {}
 
 
 
@@ -13,8 +14,11 @@ services:
       dockerfile: ./compose/production/django/Dockerfile
 
     image: brainglobe_data_api_connectivity_frontend_production_django
+    environment:
+      - NEUROME_DATA_DIR=/neurome_data  # set pooch cache location
     volumes:
       - production_django_media:/app/brainglobe_data_api_connectivity_frontend/media
+      - production_neurome_data:/neurome_data  # persist pooch's cache
     depends_on:
       - postgres
       - redis

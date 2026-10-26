@@ -14,7 +14,9 @@ services:
     depends_on:
       - postgres
     environment:
-      - NEUROME_DATA_DIR=/neurome_data  # set pooch cache location
+      # Set pooch cache location. This is outside the mounted /app dir,
+      # to avoid slow startup
+      - NEUROME_DATA_DIR=/neurome_data
     volumes:
       - /app/.venv
       - .:/app:z

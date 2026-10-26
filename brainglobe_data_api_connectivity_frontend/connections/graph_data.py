@@ -1,4 +1,5 @@
 from enum import StrEnum
+from functools import cache
 from typing import TYPE_CHECKING
 
 import polars as pl
@@ -37,9 +38,14 @@ class DijkstraStrategies(StrEnum):
                 raise ValueError(msg)
 
 
+@cache
 def get_connections(sex: Sex) -> Connections:
-    """Fetch a connections object for the specified sex."""
+    """
+    Fetch a connections object for the specified sex.
 
+    On first call (per sex), this loads the connections object from CSV files.
+    Later calls return the cached, in-memory result instead.
+    """
     return load_data(sex)
 
 

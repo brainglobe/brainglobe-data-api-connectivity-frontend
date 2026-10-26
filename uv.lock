@@ -165,8 +165,8 @@ wheels = [
 
 [[package]]
 name = "brainglobe-data-api-connectivity"
-version = "0.1.dev38+gddb07bdf9"
-source = { git = "https://github.com/brainglobe/brainglobe-data-api-connectivity#ddb07bdf94b78641178f3d8fc75daf8a35d77f87" }
+version = "0.1.dev42+g312fc829e"
+source = { git = "https://github.com/brainglobe/brainglobe-data-api-connectivity?rev=km%2Fchange-cache-location#312fc829e7a97c2741a75f4a7e3f46165f968940" }
 dependencies = [
     { name = "openpyxl" },
     { name = "pandas" },
@@ -228,7 +228,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "argon2-cffi", specifier = "==25.1.0" },
-    { name = "brainglobe-data-api-connectivity", git = "https://github.com/brainglobe/brainglobe-data-api-connectivity" },
+    { name = "brainglobe-data-api-connectivity", git = "https://github.com/brainglobe/brainglobe-data-api-connectivity?rev=km%2Fchange-cache-location" },
     { name = "crispy-bootstrap5", specifier = "==2026.9" },
     { name = "django", specifier = "==6.1.1" },
     { name = "django-allauth", extras = ["mfa"], specifier = "==65.19.5" },

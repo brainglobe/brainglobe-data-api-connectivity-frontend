@@ -14,7 +14,10 @@ classifiers = [
 ]
 dependencies = [
   "argon2-cffi==25.1.0",
-  "brainglobe-data-api-connectivity @ git+https://github.com/brainglobe/brainglobe-data-api-connectivity",
+  """\
+  brainglobe-data-api-connectivity @ \
+  git+https://github.com/brainglobe/brainglobe-data-api-connectivity@km/change-cache-location\
+  """,
   "crispy-bootstrap5==2026.9",
   "django==6.1.1",
   "django-allauth[mfa]==65.19.5",

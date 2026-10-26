@@ -64,6 +64,19 @@ This command will delete all result entries older than settings.RESULT_VALIDITY_
 
 In a production deployment, this command will be run automatically at regular intervals using cron.
 
+## Download new neurome datasets
+
+See the [production docs](./docs/prod_deployment.md#download-via-pooch) for information about how datasets are cached.
+
+To force download of new datasets in a local dev environment, run:
+```bash
+# Make sure containers are down
+docker compose -f docker-compose.local.yml down
+
+# Remove the volume containing the neurome datasets
+docker volume rm brainglobe-data-api-connectivity-frontend_neurome_data
+```
+
 ## Run the tests
 
 We use [`pytest`](https://docs.pytest.org/en/stable/) with [`pytest-django`](https://pytest-django.readthedocs.io/en/stable/) for tests.

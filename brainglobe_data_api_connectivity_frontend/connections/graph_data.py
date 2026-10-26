@@ -2,15 +2,15 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 
 import polars as pl
-from brainglobe_data_api_connectivity.connections import Connections
 from brainglobe_data_api_connectivity.dijkstra import dijkstra
 from brainglobe_data_api_connectivity.dijkstra.strategy import DijkstraStrategy
 from brainglobe_data_api_connectivity.dijkstra.strategy import FewestSteps
 from brainglobe_data_api_connectivity.dijkstra.strategy import WeakestTotalWeight
 from brainglobe_data_api_connectivity.dijkstra.strategy import WidestPath
-from django.conf import settings
+from brainglobe_data_api_connectivity.io.loaders import load_data
 
 if TYPE_CHECKING:
+    from brainglobe_data_api_connectivity.connections import Connections
     from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
 
 
@@ -38,27 +38,9 @@ class DijkstraStrategies(StrEnum):
 
 
 def get_connections(sex: Sex) -> Connections:
-    """
-    Create a connections object for the specified sex.
+    """Fetch a connections object for the specified sex."""
 
-    This function uses csv files stored inside settings.CONNECTIONS_DATA_DIR.
-    This directory should contain one folder for each sex
-    (identifiers: "CNS2m" / "CNS2f"), each containing:
-    IDENTIFIER_node_info.csv, IDENTIFIER_edge_table.csv, and
-    IDENTIFIER_edge_info.csv,
-    """
-
-    identifier = "CNS2m" if sex == Sex.MALE else "CNS2f"
-
-    sex_dir = settings.CONNECTIONS_DATA_DIR / identifier
-    return Connections.from_files(
-        node_info=sex_dir / f"{identifier}_node_info.csv",
-        edge_table=sex_dir / f"{identifier}_edge_table.csv",
-        edge_info=sex_dir / f"{identifier}_edge_info.csv",
-        edge_info_from_col="origin_region_idx",
-        edge_info_to_col="termination_region_idx",
-        node_index_column="region_idx",
-    )
+    return load_data(sex)
 
 
 def direct_connections(sex: Sex, region_id: str, node_as: NodeIs) -> pl.DataFrame:

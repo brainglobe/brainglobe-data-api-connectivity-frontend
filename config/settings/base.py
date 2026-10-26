@@ -317,6 +317,3 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 
 # result files will be removed after RESULT_VALIDITY_MINUTES
 RESULT_VALIDITY_MINUTES = 10
-# If true, cache the male / female connections on startup.
-# Defaults to false so it isn't run for management commands etc.
-CACHE_ON_STARTUP = env.bool("CACHE_ON_STARTUP", default=False)

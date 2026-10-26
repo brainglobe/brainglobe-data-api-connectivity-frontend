@@ -1,3 +1,5 @@
+import logging
+
 from django.apps import AppConfig
 from django.conf import settings
 
@@ -16,5 +18,6 @@ class ConnectionsConfig(AppConfig):
         """
 
         if settings.CACHE_ON_STARTUP:
+            logging.info("attempting warm")
             get_connections(Sex.MALE)
             get_connections(Sex.FEMALE)

@@ -1,3 +1,4 @@
+import logging
 from enum import StrEnum
 from functools import cache
 from typing import TYPE_CHECKING
@@ -46,6 +47,7 @@ def get_connections(sex: Sex) -> Connections:
     On first call (per sex), this loads the connections object from CSV files.
     Later calls return the cached, in-memory result instead.
     """
+    logging.info("missed cache")
     return load_data(sex)
 
 

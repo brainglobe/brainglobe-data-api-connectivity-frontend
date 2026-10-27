@@ -117,7 +117,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+LOGIN_REDIRECT_URL = "home"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 
@@ -152,6 +152,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -279,6 +280,8 @@ REDIS_SSL = REDIS_URL.startswith("rediss://")
 # django-allauth
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", False)
+# Don't send emails for password reset on unknown accounts
+ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_LOGIN_METHODS = {"email"}
 # https://docs.allauth.org/en/latest/account/configuration.html
@@ -286,7 +289,7 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "none"
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_ADAPTER = (
     "brainglobe_data_api_connectivity_frontend.users.adapters.AccountAdapter"

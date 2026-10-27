@@ -4,6 +4,10 @@ from pathlib import Path
 import pytest
 from django.core.management import call_command
 
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
+    get_connections,
+)
 from brainglobe_data_api_connectivity_frontend.connections.models import QueryResult
 from brainglobe_data_api_connectivity_frontend.connections.tests.helpers import (
     create_query_result,
@@ -84,3 +88,24 @@ def test_cleanup_with_missing_results_file(settings):
     # The result should have been deleted successfully
     assert "Deleted 1 expired results" in out.getvalue()
     assert len(QueryResult.objects.all()) == 0
+
+
+def test_fetch_neurome_data(mock_load_data):
+    """
+    Test running the 'fetch_neurome_data' management command, loads the
+    male and female datasets.
+    """
+
+    # Invalidate the get_connections in-memory cache
+    get_connections.cache_clear()
+
+    out = StringIO()
+    call_command("fetch_neurome_data", stdout=out)
+
+    # Check mock was called for male and female (we mock to avoid
+    # downloading the large real dataset)
+    sexes = [Sex.MALE, Sex.FEMALE]
+    assert mock_load_data.call_count == len(sexes)
+
+    for sex in sexes:
+        mock_load_data.assert_any_call(sex)

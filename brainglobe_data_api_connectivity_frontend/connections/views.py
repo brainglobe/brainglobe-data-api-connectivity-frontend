@@ -17,6 +17,9 @@ from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import best_path
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
+    bidirectional_connections,
+)
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
     get_connections,
 )
 
@@ -130,11 +133,12 @@ def run_bidirectional_connections_query(request: HttpRequest, sex: str) -> HttpR
 
     if form.is_valid():
         connections_lookup = ConnectionsLookup[form.cleaned_data["connections_lookup"]]
-
-        result_df = get_connections(sex).bidirectional_connections(
-            node={"region_id": form.cleaned_data["region"]},
+        result_df = bidirectional_connections(
+            sex=sex,
+            region_id=form.cleaned_data["region"],
             connections_lookup=connections_lookup,
         )
+
         return _handle_query_result(result_df, sex)
 
     return redirect("connections:browse_connections", sex=sex)

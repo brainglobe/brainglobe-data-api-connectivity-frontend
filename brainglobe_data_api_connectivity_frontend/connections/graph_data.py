@@ -4,6 +4,7 @@ from functools import cache
 from typing import TYPE_CHECKING
 
 import polars as pl
+from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
 from brainglobe_data_api_connectivity.dijkstra import dijkstra
 from brainglobe_data_api_connectivity.dijkstra.strategy import DijkstraStrategy
 from brainglobe_data_api_connectivity.dijkstra.strategy import FewestSteps
@@ -50,6 +51,44 @@ def get_connections(sex: Sex) -> Connections:
     """
     logger.info("Loading connections object from file...")
     return load_data(sex)
+
+
+def bidirectional_connections(
+    sex: Sex, region_id: str, connections_lookup: ConnectionsLookup
+) -> pl.DataFrame:
+
+    connections = get_connections(sex)
+    result_df = connections.bidirectional_connections(
+        node={"region_id": region_id},
+        connections_lookup=connections_lookup,
+    )
+
+    if connections_lookup == ConnectionsLookup.REPORTED and len(result_df) > 0:
+        node_index_col = "__node_index"
+        node_indexes = pl.concat([result_df["from"], result_df["to"]]).unique()
+        region_ids = connections.node_information_from_index(node_indexes).select(
+            ["region_id", node_index_col]
+        )
+
+        result_df = (
+            result_df.join(
+                region_ids, left_on="from", right_on=node_index_col, how="left"
+            )
+            .drop("from")
+            .rename({"region_id": "from"})
+        )
+        result_df = (
+            result_df.join(
+                region_ids, left_on="to", right_on=node_index_col, how="left"
+            )
+            .drop("to")
+            .rename({"region_id": "to"})
+        )
+
+        # Make sure columns are in order
+        result_df = result_df.select(["from", "to", "value"])
+
+    return result_df
 
 
 def best_path(

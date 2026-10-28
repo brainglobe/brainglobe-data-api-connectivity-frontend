@@ -56,6 +56,7 @@ def next_result_id():
     [
         reverse("connections:browse_connections", args=["male"]),
         reverse("connections:run_direct_query", args=["male"]),
+        reverse("connections:run_direct_between_query", args=["male"]),
         reverse("connections:run_path_query", args=["male"]),
         reverse("connections:results", args=[1]),
         reverse("connections:download_results", args=[1]),

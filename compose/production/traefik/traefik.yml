@@ -28,7 +28,7 @@ certificatesResolvers:
 http:
   routers:
     web-secure-router:
-      rule: 'Host(`neurome.neuroinformatics.dev`)'
+      rule: 'Host(`neurome.brainglobe.info`)'
       entryPoints:
         - web-secure
       middlewares:
@@ -39,7 +39,7 @@ http:
         certResolver: letsencrypt
 
     web-media-router:
-      rule: 'Host(`neurome.neuroinformatics.dev`) && PathPrefix(`/media/`)'
+      rule: 'Host(`neurome.brainglobe.info`) && PathPrefix(`/media/`)'
       entryPoints:
         - web-secure
       middlewares:

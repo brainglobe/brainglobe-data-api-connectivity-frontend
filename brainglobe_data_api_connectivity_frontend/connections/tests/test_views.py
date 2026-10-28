@@ -31,6 +31,16 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
+def logged_in_client(client, django_user_model):
+    user = django_user_model.objects.create_user(
+        email="fake.email",
+        password="fake-pass",  # noqa: S106
+    )
+    client.force_login(user)
+    return client
+
+
+@pytest.fixture
 def next_result_id():
     """Find the next available result id"""
 
@@ -42,6 +52,25 @@ def next_result_id():
 
 
 @pytest.mark.parametrize(
+    "path",
+    [
+        reverse("connections:browse_connections", args=["male"]),
+        reverse("connections:run_direct_query", args=["male"]),
+        reverse("connections:run_path_query", args=["male"]),
+        reverse("connections:results", args=[1]),
+        reverse("connections:download_results", args=[1]),
+    ],
+)
+def test_access_page_not_logged_in(client, path):
+    """
+    Test that accessing a page when not logged in re-directs to the login page
+    """
+
+    response = client.get(path)
+    assertRedirects(response, f"{reverse('account_login')}?next={path}")
+
+
+@pytest.mark.parametrize(
     "url",
     [
         "connections:browse_connections",
@@ -50,7 +79,7 @@ def next_result_id():
         "connections:run_path_query",
     ],
 )
-def test_browse_connections_invalid_sex(rf, url):
+def test_urls_with_invalid_sex(rf, url):
     """Test that an invalid sex routes to a 404 page."""
 
     sex = "INVALID"
@@ -61,8 +90,10 @@ def test_browse_connections_invalid_sex(rf, url):
 
 
 @pytest.mark.parametrize("sex", ["male", "female"])
-def test_browse_connections(client, sex):
-    response = client.get(reverse("connections:browse_connections", args=[sex]))
+def test_browse_connections(logged_in_client, sex):
+    response = logged_in_client.get(
+        reverse("connections:browse_connections", args=[sex])
+    )
 
     assert response.status_code == HTTPStatus.OK
     assert isinstance(response.context["connections_form"], DirectConnectionsForm)
@@ -183,11 +214,11 @@ def test_browse_connections(client, sex):
         ),
     ],
 )
-def test_run_valid_query(client, url, sex, form_data, expected_result):
+def test_run_valid_query(logged_in_client, url, sex, form_data, expected_result):
     """Test that running a valid query produces the correct result."""
 
     n_results_before = QueryResult.objects.count()
-    response = client.post(reverse(url, args=[sex]), form_data)
+    response = logged_in_client.post(reverse(url, args=[sex]), form_data)
     n_results_after = QueryResult.objects.count()
 
     latest_result = QueryResult.objects.latest("id")
@@ -216,14 +247,14 @@ def test_run_valid_query(client, url, sex, form_data, expected_result):
         "connections:run_path_query",
     ],
 )
-def test_run_invalid_queries(client, url):
+def test_run_invalid_queries(logged_in_client, url):
     """
     Test that an invalid form submission creates no results and redirects
     to the search page.
     """
 
     n_results_before = QueryResult.objects.count()
-    response = client.post(
+    response = logged_in_client.post(
         reverse(url, args=["male"]),
         {"INVALID_FORM_DATA": "INVALID"},
     )
@@ -243,22 +274,24 @@ def test_view_missing_result(rf, next_result_id):
         results(request, result_id=next_result_id)
 
 
-def test_view_valid_result(client):
+def test_view_valid_result(logged_in_client):
     """Test a valid result id is fetched and rendered on page."""
 
     query_result = create_query_result()
-    response = client.get(reverse("connections:results", args=[query_result.id]))
+    response = logged_in_client.get(
+        reverse("connections:results", args=[query_result.id])
+    )
 
     assert response.status_code == HTTPStatus.OK
     assert response.context["result"] == query_result
     assertTemplateUsed(response=response, template_name="connections/results.html")
 
 
-def test_download_valid_result(client):
+def test_download_valid_result(logged_in_client):
     """Test download of an example results file."""
 
     query_result = create_query_result()
-    response = client.get(
+    response = logged_in_client.get(
         reverse("connections:download_results", args=[query_result.id])
     )
     assert response.status_code == HTTPStatus.OK

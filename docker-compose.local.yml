@@ -1,6 +1,7 @@
 volumes:
   brainglobe_data_api_connectivity_frontend_local_postgres_data: {}
   brainglobe_data_api_connectivity_frontend_local_postgres_data_backups: {}
+  neurome_data: {}
 
 
 services:
@@ -12,9 +13,14 @@ services:
     container_name: brainglobe_data_api_connectivity_frontend_local_django
     depends_on:
       - postgres
+    environment:
+      # Set pooch cache location. This is outside the mounted /app dir,
+      # to avoid slow startup
+      - NEUROME_DATA_DIR=/neurome_data
     volumes:
       - /app/.venv
       - .:/app:z
+      - neurome_data:/neurome_data  # persist pooch's cache
     env_file:
       - path: ./.envs/.local/.django
         required: false

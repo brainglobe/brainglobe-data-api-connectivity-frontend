@@ -41,6 +41,16 @@ To stop the app:
 docker compose -f docker-compose.local.yml down
 ```
 
+### Adding users
+
+The first time you run the app, you will need to create a superuser to allow access. Run:
+```bash
+docker compose -f docker-compose.local.yml run --rm django python manage.py createsuperuser
+```
+
+This will prompt you for an email / password to use to access the app. This will also
+give you full access to the admin interface at: `http://localhost:8000/admin`.
+
 ## Cleanup result files
 
 Result csv files will be written to `brainglobe_data_api_connectivity_frontend/media/results` as you use the app.
@@ -53,6 +63,19 @@ docker compose -f docker-compose.local.yml run --rm django python manage.py clea
 This command will delete all result entries older than settings.RESULT_VALIDITY_MINUTES in the database (and their associated files). RESULT_VALIDITY_MINUTES can be adjusted inside `config/settings/base.py`.
 
 In a production deployment, this command will be run automatically at regular intervals using cron.
+
+## Download new neurome datasets
+
+See the [production docs](./docs/prod_deployment.md#download-via-pooch) for information about how datasets are cached.
+
+To force download of new datasets in a local dev environment, run:
+```bash
+# Make sure containers are down
+docker compose -f docker-compose.local.yml down
+
+# Remove the volume containing the neurome datasets
+docker volume rm brainglobe-data-api-connectivity-frontend_neurome_data
+```
 
 ## Run the tests
 

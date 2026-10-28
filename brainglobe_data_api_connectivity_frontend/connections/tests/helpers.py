@@ -1,9 +1,28 @@
 from datetime import timedelta
+from pathlib import Path
 
+from brainglobe_data_api_connectivity.connections import Connections
 from django.core.files.base import ContentFile
 from django.utils import timezone
 
+from brainglobe_data_api_connectivity_frontend.connections.graph_data import Sex
 from brainglobe_data_api_connectivity_frontend.connections.models import QueryResult
+
+
+def load_test_data(sex: Sex) -> Connections:
+    """Load the test data Connections object."""
+
+    identifier = "CNS2m" if sex == Sex.MALE else "CNS2f"
+
+    sex_dir = Path(__file__).parent / "data" / identifier
+    return Connections.from_files(
+        node_info=sex_dir / f"{identifier}_node_info.csv",
+        edge_table=sex_dir / f"{identifier}_edge_table.csv",
+        edge_info=sex_dir / f"{identifier}_edge_info.csv",
+        edge_info_from_col="origin_region_idx",
+        edge_info_to_col="termination_region_idx",
+        node_index_column="region_idx",
+    )
 
 
 def create_query_result(

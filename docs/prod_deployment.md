@@ -125,6 +125,7 @@ If they are already present, they will not be downloaded again.
 
 These files are put into a docker volume to allow them to persist between restarts of the containers.
 If you would like to force re-download of the datasets (e.g. because a new version is available), you will need to:
+
 ```bash
 # Make sure containers are down
 docker compose -f docker-compose.production.yml down

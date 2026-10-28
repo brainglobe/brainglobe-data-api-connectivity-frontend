@@ -31,7 +31,7 @@ def test_get_connections_cache(mock_load_data):
     # Multiple calls to get_connections(MALE) should only call load_data once
     # (rest use cache)
     expected_total_calls = 1
-    for _i in range(3):
+    for _ in range(3):
         male_data = get_connections(Sex.MALE)
         assert_frame_equal(male_data.nodes, expected_male_data.nodes)
         assert mock_load_data.call_count == expected_total_calls
@@ -39,7 +39,7 @@ def test_get_connections_cache(mock_load_data):
     # Multiple calls to get_connections(FEMALE) should only call load_data once
     # (rest use cache)
     expected_total_calls += 1
-    for _i in range(3):
+    for _ in range(3):
         female_data = get_connections(Sex.FEMALE)
         assert_frame_equal(female_data.nodes, expected_female_data.nodes)
         assert mock_load_data.call_count == expected_total_calls

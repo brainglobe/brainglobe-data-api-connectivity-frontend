@@ -21,6 +21,7 @@ from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
 )
 
 from .forms import BestPathForm
+from .forms import BidirectionalConnectionsForm
 from .forms import DirectConnectionsBetweenForm
 from .forms import DirectConnectionsForm
 from .models import QueryResult
@@ -58,6 +59,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
     sex = _get_valid_sex(sex)
     connections_form = DirectConnectionsForm(sex=sex)
     connections_between_form = DirectConnectionsBetweenForm(sex=sex)
+    bidirectional_form = BidirectionalConnectionsForm(sex=sex)
     path_form = BestPathForm(sex=sex)
 
     return render(
@@ -66,6 +68,7 @@ def browse_connections(request: HttpRequest, sex: str) -> HttpResponse:
         {
             "connections_form": connections_form,
             "connections_between_form": connections_between_form,
+            "bidirectional_form": bidirectional_form,
             "path_form": path_form,
             "sex": sex,
         },
@@ -112,6 +115,25 @@ def run_direct_connections_between_query(
             node1={"region_id": form.cleaned_data["region1"]},
             connections_lookup=connections_lookup,
             node0_as=node0_as,
+        )
+        return _handle_query_result(result_df, sex)
+
+    return redirect("connections:browse_connections", sex=sex)
+
+
+@require_POST
+def run_bidirectional_connections_query(request: HttpRequest, sex: str) -> HttpResponse:
+    """Run a bidirectional connections query, using the submitted form data."""
+
+    sex = _get_valid_sex(sex)
+    form = BidirectionalConnectionsForm(request.POST, sex=sex)
+
+    if form.is_valid():
+        connections_lookup = ConnectionsLookup[form.cleaned_data["connections_lookup"]]
+
+        result_df = get_connections(sex).bidirectional_connections(
+            node={"region_id": form.cleaned_data["region"]},
+            connections_lookup=connections_lookup,
         )
         return _handle_query_result(result_df, sex)
 

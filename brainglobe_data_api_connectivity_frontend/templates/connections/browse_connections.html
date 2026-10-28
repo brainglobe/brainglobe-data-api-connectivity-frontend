@@ -9,6 +9,8 @@
   {% crispy connections_form %}
   <h2 class="mt-4">Direct connections between:</h2>
   {% crispy connections_between_form %}
+  <h2 class="mt-4">Bidirectional connections:</h2>
+  {% crispy bidirectional_form %}
   <h2 class="mt-4">Find path:</h2>
   {% crispy path_form %}
 {% endblock content %}

@@ -15,6 +15,11 @@ urlpatterns = [
         views.run_direct_connections_between_query,
         name="run_direct_between_query",
     ),
+    path(
+        "run_bidirectional_connections_query/<str:sex>",
+        views.run_bidirectional_connections_query,
+        name="run_bidirectional_query",
+    ),
     path("run_path_query/<str:sex>", views.run_path_query, name="run_path_query"),
     path("results/<int:result_id>/", views.results, name="results"),
     path(

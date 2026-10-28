@@ -116,6 +116,24 @@ class DirectConnectionsBetweenForm(BaseQueryForm):
         )
 
 
+class BidirectionalConnectionsForm(BaseQueryForm):
+    """Form to query bidirectional connections of a node"""
+
+    region = forms.ChoiceField(
+        label="Region name",
+        required=True,
+    )
+
+    connections_lookup = _create_connections_lookup_field()
+
+    def __init__(self, *args, sex: Sex, **kwargs) -> None:
+        super().__init__(*args, sex=sex, **kwargs)
+        self.fields["region"].choices = _fetch_regions(sex)  # type: ignore[attr-defined]
+        self.helper.form_action = reverse(
+            "connections:run_bidirectional_query", args=[self.sex]
+        )
+
+
 class BestPathForm(BaseQueryForm):
     """Form to query the path between two nodes."""
 

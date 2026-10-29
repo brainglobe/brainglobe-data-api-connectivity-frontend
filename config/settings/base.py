@@ -315,7 +315,5 @@ STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
 # connections app settings
 # ------------------------------------------------------------------------------
 
-# Directory where source csv files are stored
-CONNECTIONS_DATA_DIR = APPS_DIR / "connections" / "data"
 # result files will be removed after RESULT_VALIDITY_MINUTES
 RESULT_VALIDITY_MINUTES = 10

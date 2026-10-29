@@ -28,7 +28,7 @@ DJANGO_SECURE_SSL_REDIRECT=False
 
 # Gunicorn
 # ------------------------------------------------------------------------------
-WEB_CONCURRENCY=4
+WEB_CONCURRENCY=2
 
 # Redis
 # ------------------------------------------------------------------------------
@@ -115,4 +115,33 @@ Check it appears in the list of cron jobs at:
 crontab -l
 ```
 
+## Caching of neurome data
 
+### Download via pooch
+
+Before every app startup, a management command is run automatically to check 
+that the neurome datasets (CSV files) have been downloaded onto the server via pooch: `python manage.py fetch_neurome_data`. 
+If they are already present, they will not be downloaded again.
+
+These files are put into a docker volume to allow them to persist between restarts of the containers.
+If you would like to force re-download of the datasets (e.g. because a new version is available), you will need to:
+
+```bash
+# Make sure containers are down
+docker compose -f docker-compose.production.yml down
+
+# Remove the volume containing the neurome datasets
+docker volume rm brainglobe-data-api-connectivity-frontend_production_neurome_data
+```
+
+The next time the app is started, the datasets will be downloaded fresh.
+
+### In-memory caching
+
+Once the app has started up, the first visit to the queries page (for each sex) will load the stored CSV datasets into a Connections object. This object is cached in-memory, so all subsequent commands will re-use it (avoiding loading from file repeatedly).
+
+Note: you have to be careful with the `WEB_CONCURRENCY` setting (inside [.envs/.production/.django](#setting-up-envsproduction-files)). `WEB_CONCURRENCY` determines the number of gunicorn workers that will be created on app startup (in production). Some important points:
+- More workers allow more requests to be handled at the same time
+- More workers == higher memory usage. Each worker will have its own copy of the male / female connections object held in memory.
+
+If you start seeing memory errors in your logs, you either need to reduce the number of workers or swap to a larger EC2 instance that has more RAM.

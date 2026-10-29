@@ -69,6 +69,7 @@ In a production deployment, this command will be run automatically at regular in
 See the [production docs](./docs/prod_deployment.md#download-via-pooch) for information about how datasets are cached.
 
 To force download of new datasets in a local dev environment, run:
+
 ```bash
 # Make sure containers are down
 docker compose -f docker-compose.local.yml down

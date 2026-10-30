@@ -12,6 +12,9 @@ from pytest_django.asserts import assertTemplateUsed
 
 from brainglobe_data_api_connectivity_frontend.connections.forms import BestPathForm
 from brainglobe_data_api_connectivity_frontend.connections.forms import (
+    DirectConnectionsBetweenForm,
+)
+from brainglobe_data_api_connectivity_frontend.connections.forms import (
     DirectConnectionsForm,
 )
 from brainglobe_data_api_connectivity_frontend.connections.models import QueryResult
@@ -53,6 +56,7 @@ def next_result_id():
     [
         reverse("connections:browse_connections", args=["male"]),
         reverse("connections:run_direct_query", args=["male"]),
+        reverse("connections:run_direct_between_query", args=["male"]),
         reverse("connections:run_path_query", args=["male"]),
         reverse("connections:results", args=[1]),
         reverse("connections:download_results", args=[1]),
@@ -72,6 +76,7 @@ def test_access_page_not_logged_in(client, path):
     [
         "connections:browse_connections",
         "connections:run_direct_query",
+        "connections:run_direct_between_query",
         "connections:run_path_query",
     ],
 )
@@ -93,6 +98,9 @@ def test_browse_connections(logged_in_client, sex):
 
     assert response.status_code == HTTPStatus.OK
     assert isinstance(response.context["connections_form"], DirectConnectionsForm)
+    assert isinstance(
+        response.context["connections_between_form"], DirectConnectionsBetweenForm
+    )
     assert isinstance(response.context["path_form"], BestPathForm)
     assert response.context["sex"] == sex
     assertTemplateUsed(
@@ -106,11 +114,17 @@ def test_browse_connections(logged_in_client, sex):
         pytest.param(
             "connections:run_direct_query",
             "female",
-            {"region": "delta", "node_as": "ANY"},
+            {
+                "region": "delta",
+                "node_as": "ANY",
+                "connections_lookup": "REPORTED",
+                "return_edges": "True",
+            },
             pl.DataFrame(
                 data={
-                    "region_id": ["alpha", "bravo", "echo", "bravo", "charlie"],
-                    "node_as": ["input", "input", "input", "output", "output"],
+                    "from": ["delta", "delta", "delta", "charlie", "bravo"],
+                    "to": ["echo", "bravo", "alpha", "delta", "delta"],
+                    "value": [7.0, 4.0, 3.0, 5.0, 4.0],
                 }
             ),
             id="Direct connections query - female",
@@ -118,14 +132,56 @@ def test_browse_connections(logged_in_client, sex):
         pytest.param(
             "connections:run_direct_query",
             "male",
-            {"region": "juliett", "node_as": "ANY"},
+            {
+                "region": "juliett",
+                "node_as": "ANY",
+                "connections_lookup": "REPORTED",
+                "return_edges": "True",
+            },
             pl.DataFrame(
                 data={
-                    "region_id": ["hotel", "india", "kilo", "hotel"],
-                    "node_as": ["input", "input", "input", "output"],
+                    "from": ["juliett", "juliett", "juliett", "hotel"],
+                    "to": ["kilo", "india", "hotel", "juliett"],
+                    "value": [5.0, 3.0, 20.0, 2.0],
                 }
             ),
             id="Direct connections query - male",
+        ),
+        pytest.param(
+            "connections:run_direct_between_query",
+            "female",
+            {
+                "region0": "delta",
+                "region1": "bravo",
+                "node0_as": "ANY",
+                "connections_lookup": "REPORTED",
+            },
+            pl.DataFrame(
+                data={
+                    "from": ["delta", "bravo"],
+                    "to": ["bravo", "delta"],
+                    "value": [4.0, 4.0],
+                }
+            ),
+            id="Direct connections between query - female",
+        ),
+        pytest.param(
+            "connections:run_direct_between_query",
+            "male",
+            {
+                "region0": "hotel",
+                "region1": "juliett",
+                "node0_as": "ANY",
+                "connections_lookup": "REPORTED",
+            },
+            pl.DataFrame(
+                data={
+                    "from": ["hotel", "juliett"],
+                    "to": ["juliett", "hotel"],
+                    "value": [2.0, 20.0],
+                }
+            ),
+            id="Direct connections between query - male",
         ),
         pytest.param(
             "connections:run_path_query",
@@ -188,6 +244,7 @@ def test_run_valid_query(logged_in_client, url, sex, form_data, expected_result)
     "url",
     [
         "connections:run_direct_query",
+        "connections:run_direct_between_query",
         "connections:run_path_query",
     ],
 )

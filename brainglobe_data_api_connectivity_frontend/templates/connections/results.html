@@ -10,4 +10,23 @@
     <a href="{% url 'connections:browse_connections' result.sex %}"
        class="btn btn-secondary">Run another query</a>
   </div>
+  {% for title, header, rows in tables %}
+    {% if title %}<h2 class="h4 mt-4">{{ title }}</h2>{% endif %}
+    <div class="table-responsive mt-3">
+      <table class="table table-striped table-sm">
+        <thead>
+          <tr>
+            {% for column in header %}<th scope="col">{{ column }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              {% for value in row %}<td>{{ value }}</td>{% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endfor %}
 {% endblock content %}

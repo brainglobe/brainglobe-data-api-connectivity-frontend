@@ -8,6 +8,8 @@ class QueryResult(models.Model):
     sex = models.CharField(max_length=6)
     result_file = models.FileField(upload_to="results")
     n_rows = models.PositiveIntegerField()
+    # Queried region, for queries about a single region
+    region_id = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f"result_{self.id}"

@@ -1,3 +1,4 @@
+import csv
 from typing import TYPE_CHECKING
 
 from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
@@ -23,11 +24,24 @@ from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
 from .forms import BestPathForm
 from .forms import DirectConnectionsBetweenForm
 from .forms import DirectConnectionsForm
+from .forms import _fetch_regions
 from .models import QueryResult
 
 if TYPE_CHECKING:
     import polars as pl
     from django.http import HttpRequest
+
+# Result columns containing region ids, to display as full region names
+REGION_ID_COLUMNS = {
+    "from",
+    "to",
+    "region_id",
+    "origin_region_id",
+    "termination_region_id",
+}
+
+# Pairs of (from, to) result columns, used to split results by direction
+EDGE_COLUMNS = [("from", "to"), ("origin_region_id", "termination_region_id")]
 
 
 def _get_valid_sex(sex: str) -> Sex:
@@ -40,10 +54,12 @@ def _get_valid_sex(sex: str) -> Sex:
         raise Http404(msg) from e
 
 
-def _handle_query_result(result_df: pl.DataFrame, sex: Sex) -> HttpResponse:
+def _handle_query_result(
+    result_df: pl.DataFrame, sex: Sex, region_id: str = ""
+) -> HttpResponse:
     """Save result_df to csv and create a record in the database"""
 
-    query_result = QueryResult(sex=sex, n_rows=len(result_df))
+    query_result = QueryResult(sex=sex, n_rows=len(result_df), region_id=region_id)
     query_result.result_file.save(
         name="results.csv", content=ContentFile(result_df.write_csv())
     )
@@ -89,7 +105,7 @@ def run_direct_connections_query(request: HttpRequest, sex: str) -> HttpResponse
             connections_lookup=connections_lookup,
             return_edges=form.cleaned_data["return_edges"],
         )
-        return _handle_query_result(result_df, sex)
+        return _handle_query_result(result_df, sex, form.cleaned_data["region"])
 
     return redirect("connections:browse_connections", sex=sex)
 
@@ -138,11 +154,72 @@ def run_path_query(request: HttpRequest, sex: str) -> HttpResponse:
     return redirect("connections:browse_connections", sex=sex)
 
 
+def _split_by_direction(
+    header: list[str], rows: list[list[str]], region_id: str
+) -> list[tuple[str, list[str], list[list[str]]]]:
+    """Split edge rows into projections from / to region_id.
+
+    Returns a list of (direction, header, rows), dropping the column that
+    always holds region_id. Returns an empty list if there are no edge columns.
+    """
+
+    for from_col, to_col in EDGE_COLUMNS:
+        if from_col in header and to_col in header:
+            break
+    else:
+        return []
+
+    tables = []
+    for direction, column in [("from", from_col), ("to", to_col)]:
+        i = header.index(column)
+        tables.append(
+            (
+                direction,
+                header[:i] + header[i + 1 :],
+                [row[:i] + row[i + 1 :] for row in rows if row[i] == region_id],
+            )
+        )
+    return tables
+
+
 def results(request: HttpRequest, result_id: int) -> HttpResponse:
     """View summary of query results."""
 
     result = get_object_or_404(QueryResult, id=result_id)
-    return render(request, "connections/results.html", {"result": result})
+
+    header, rows = [], []
+    if result.result_file:
+        with result.result_file.open("r") as f:
+            reader = csv.reader(f)
+            header = next(reader, [])
+            rows = list(reader)
+
+    region_names = dict(_fetch_regions(Sex(result.sex)))
+
+    tables = [("", header, rows)] if header else []
+    if result.region_id:
+        region_name = region_names.get(result.region_id, result.region_id)
+        tables = [
+            (f"Projections {direction} {region_name}", table_header, table_rows)
+            for direction, table_header, table_rows in _split_by_direction(
+                header, rows, result.region_id
+            )
+            if table_rows
+        ] or tables
+
+    for _, table_header, table_rows in tables:
+        for i, column in enumerate(table_header):
+            if column in REGION_ID_COLUMNS:
+                for row in table_rows:
+                    row[i] = region_names.get(row[i], row[i])
+            elif column == "value":
+                table_header[i] = "strength"
+
+    return render(
+        request,
+        "connections/results.html",
+        {"result": result, "tables": tables},
+    )
 
 
 def download_results(request: HttpRequest, result_id: int) -> FileResponse:

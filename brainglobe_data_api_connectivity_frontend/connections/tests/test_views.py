@@ -3,6 +3,7 @@ from pathlib import Path
 
 import polars as pl
 import pytest
+from django.core.files.base import ContentFile
 from django.http import Http404
 from django.urls import reverse
 from polars.testing import assert_frame_equal
@@ -286,6 +287,34 @@ def test_view_valid_result(logged_in_client):
     assert response.status_code == HTTPStatus.OK
     assert response.context["result"] == query_result
     assertTemplateUsed(response=response, template_name="connections/results.html")
+
+
+def test_view_result_tables_split_by_direction(logged_in_client):
+    """Test results for a single region are split into projections from / to it."""
+
+    query_result = QueryResult(sex="male", n_rows=3, region_id="hotel")
+    query_result.result_file.save(
+        name="test.csv",
+        content=ContentFile(
+            "from,to,value\nhotel,india,1\njuliett,hotel,2\nhotel,kilo,3\n"
+        ),
+    )
+    response = logged_in_client.get(
+        reverse("connections:results", args=[query_result.id])
+    )
+
+    assert response.context["tables"] == [
+        (
+            "Projections from Hotel nucleus (HTL), side 1",
+            ["to", "strength"],
+            [["India area (IND), side 1", "1"], ["Kilo area (KIL), side 2", "3"]],
+        ),
+        (
+            "Projections to Hotel nucleus (HTL), side 1",
+            ["from", "strength"],
+            [["Juliett nucleus (JLT), side 2", "2"]],
+        ),
+    ]
 
 
 def test_download_valid_result(logged_in_client):

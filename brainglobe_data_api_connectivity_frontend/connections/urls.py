@@ -18,6 +18,11 @@ urlpatterns = [
     path("run_path_query/<str:sex>", views.run_path_query, name="run_path_query"),
     path("results/<int:result_id>/", views.results, name="results"),
     path(
+        "evidence/<str:sex>/",
+        views.connection_evidence,
+        name="connection_evidence",
+    ),
+    path(
         "results/<int:result_id>/download/",
         views.download_results,
         name="download_results",

@@ -22,7 +22,15 @@
         <tbody>
           {% for row in rows %}
             <tr>
-              {% for value in row %}<td>{{ value }}</td>{% endfor %}
+              {% for value in row %}
+                {% if forloop.last and header|last == "evidence" %}
+                  <td>
+                    <a href="{{ value }}" class="btn btn-sm btn-outline-primary">View evidence</a>
+                  </td>
+                {% else %}
+                  <td>{{ value }}</td>
+                {% endif %}
+              {% endfor %}
             </tr>
           {% endfor %}
         </tbody>

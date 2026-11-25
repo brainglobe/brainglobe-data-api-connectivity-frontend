@@ -1,5 +1,6 @@
 import csv
 from typing import TYPE_CHECKING
+from urllib.parse import urlencode
 
 from brainglobe_data_api_connectivity.connections.query_opts import ConnectionsLookup
 from brainglobe_data_api_connectivity.connections.query_opts import NodeIs
@@ -10,6 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from brainglobe_data_api_connectivity_frontend.connections.graph_data import (
@@ -42,6 +44,21 @@ REGION_ID_COLUMNS = {
 
 # Pairs of (from, to) result columns, used to split results by direction
 EDGE_COLUMNS = [("from", "to"), ("origin_region_id", "termination_region_id")]
+
+# Evidence columns not shown on the evidence page, as they are internal or
+# repeat the connection's regions
+EVIDENCE_HIDDEN_COLUMNS = {
+    "__idx_from",
+    "__idx_to",
+    "origin_region_idx",
+    "termination_region_idx",
+    "origin_region_id",
+    "termination_region_id",
+    "connection_origin_region_side",
+    "connection_origin_region_abbr",
+    "connection_termination_region_side",
+    "connection_termination_region_abbr",
+}
 
 
 def _get_valid_sex(sex: str) -> Sex:
@@ -194,6 +211,16 @@ def results(request: HttpRequest, result_id: int) -> HttpResponse:
             header = next(reader, [])
             rows = list(reader)
 
+    # Add a link to the evidence for each connection
+    if "from" in header and "to" in header:
+        i_from, i_to = header.index("from"), header.index("to")
+        evidence_url = reverse("connections:connection_evidence", args=[result.sex])
+        header.append("evidence")
+        for row in rows:
+            row.append(
+                f"{evidence_url}?{urlencode({'from': row[i_from], 'to': row[i_to]})}"
+            )
+
     region_names = dict(_fetch_regions(Sex(result.sex)))
 
     tables = [("", header, rows)] if header else []
@@ -219,6 +246,35 @@ def results(request: HttpRequest, result_id: int) -> HttpResponse:
         request,
         "connections/results.html",
         {"result": result, "tables": tables},
+    )
+
+
+def connection_evidence(request: HttpRequest, sex: str) -> HttpResponse:
+    """View all evidence (reports, papers etc.) for one connection."""
+
+    sex = _get_valid_sex(sex)
+    region_names = dict(_fetch_regions(sex))
+    from_id, to_id = request.GET.get("from"), request.GET.get("to")
+    if from_id not in region_names or to_id not in region_names:
+        msg = "Unknown region"
+        raise Http404(msg)
+
+    evidence_df = get_connections(sex).direct_connection_between(
+        node0={"region_id": from_id},
+        node1={"region_id": to_id},
+        connections_lookup=ConnectionsLookup.ALL,
+        node0_as=NodeIs.INPUT,
+    )
+    evidence_df = evidence_df.drop(EVIDENCE_HIDDEN_COLUMNS, strict=False)
+
+    return render(
+        request,
+        "connections/evidence.html",
+        {
+            "title": f"{region_names[from_id]} to {region_names[to_id]}",
+            "header": evidence_df.columns,
+            "rows": evidence_df.rows(),
+        },
     )
 
 

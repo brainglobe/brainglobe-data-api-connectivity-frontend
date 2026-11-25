@@ -61,6 +61,7 @@ def next_result_id():
         reverse("connections:run_path_query", args=["male"]),
         reverse("connections:results", args=[1]),
         reverse("connections:download_results", args=[1]),
+        reverse("connections:connection_evidence", args=["male"]),
     ],
 )
 def test_access_page_not_logged_in(client, path):
@@ -303,18 +304,47 @@ def test_view_result_tables_split_by_direction(logged_in_client):
         reverse("connections:results", args=[query_result.id])
     )
 
+    evidence_url = reverse("connections:connection_evidence", args=["male"])
     assert response.context["tables"] == [
         (
             "Projections from Hotel nucleus (HTL), side 1",
-            ["to", "strength"],
-            [["India area (IND), side 1", "1"], ["Kilo area (KIL), side 2", "3"]],
+            ["to", "strength", "evidence"],
+            [
+                [
+                    "India area (IND), side 1",
+                    "1",
+                    f"{evidence_url}?from=hotel&to=india",
+                ],
+                ["Kilo area (KIL), side 2", "3", f"{evidence_url}?from=hotel&to=kilo"],
+            ],
         ),
         (
             "Projections to Hotel nucleus (HTL), side 1",
-            ["from", "strength"],
-            [["Juliett nucleus (JLT), side 2", "2"]],
+            ["from", "strength", "evidence"],
+            [
+                [
+                    "Juliett nucleus (JLT), side 2",
+                    "2",
+                    f"{evidence_url}?from=juliett&to=hotel",
+                ]
+            ],
         ),
     ]
+
+
+def test_view_connection_evidence(logged_in_client):
+    """Test all evidence for one connection is shown."""
+
+    response = logged_in_client.get(
+        reverse("connections:connection_evidence", args=["male"]),
+        {"from": "hotel", "to": "india"},
+    )
+
+    assert response.context["title"] == (
+        "Hotel nucleus (HTL), side 1 to India area (IND), side 1"
+    )
+    assert response.context["header"] == ["weight", "description"]
+    assert response.context["rows"] == [(1.0, "0 to 1"), (2.0, "0 to 1 (different)")]
 
 
 def test_download_valid_result(logged_in_client):

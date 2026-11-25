@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Evidence{% endblock title %}
+{% block content %}
+  <h1>Evidence</h1>
+  <p class="text-center">{{ title }} - {{ rows|length }} reports.</p>
+  {% if not rows %}
+    <p class="text-center text-muted">The dataset has no evidence records for this connection.</p>
+  {% endif %}
+  <div class="table-responsive mt-3">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          {% for column in header %}<th scope="col">{{ column }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            {% for value in row %}
+              {% if value|stringformat:"s"|slice:":8" == "https://" %}
+                <td>
+                  <a href="{{ value }}" target="_blank" rel="noopener">{{ value }}</a>
+                </td>
+              {% else %}
+                <td>{{ value|default_if_none:"" }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}

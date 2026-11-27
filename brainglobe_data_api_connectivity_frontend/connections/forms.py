@@ -16,8 +16,12 @@ def _fetch_regions(sex: Sex) -> list[tuple[str, str]]:
 
     connections = get_connections(sex)
 
-    names = sorted(connections.nodes["region_id"])
-    return [(name, name) for name in names]
+    nodes = connections.nodes.select("region_id", "gray_matter_region", "abbr", "side")
+    names = [
+        (region_id, f"{name} ({abbr}), side {side}")
+        for region_id, name, abbr, side in nodes.iter_rows()
+    ]
+    return sorted(names, key=lambda name: name[1])
 
 
 def _create_node_as_field(label: str = "Node as") -> forms.ChoiceField:

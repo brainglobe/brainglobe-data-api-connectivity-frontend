@@ -1,6 +1,6 @@
-region_idx,region_id
-0,alpha
-1,bravo
-2,charlie
-3,delta
-4,echo
+region_idx,side,gray_matter_region,abbr,region_id
+0,1,Alpha nucleus,ALP,alpha
+1,1,Bravo nucleus,BRV,bravo
+2,1,Charlie area,CHA,charlie
+3,2,Delta nucleus,DLT,delta
+4,2,Echo area,ECH,echo
